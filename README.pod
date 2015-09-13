@@ -1,0 +1,5 @@
+=head1 SorWeTo Server
+
+Core Server for the SorWeTo project
+
+=cut
