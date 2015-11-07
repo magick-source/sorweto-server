@@ -21,10 +21,23 @@ sub startup {
   my $plugins = $self->config->config('server', 'plugins');
   if ($plugins) {
     $plugins = [split /\s*[,;]\s*/, $plugins];
+    my %registered = ();
     for my $plugin (@$plugins) {
       next unless $plugin;
+      next if $registered{ $plugin };
       my $config = $self->config->config("plugin:$plugin") || {};
-      $self->plugins->register_plugin( $plugin, $self, $config );
+      my $plugin = $self->plugins->register_plugin(
+                        $plugin, $self, $config
+                    );
+      
+      if ($plugin and $plugin->can('dependences')) {
+        my @depends = $plugin->dependences();
+        if (@depends) {
+          push @$plugins, grep { !$registered{ $_ } } @depends;
+        }
+      }
+
+      $registered{ $plugin } = 1;
     }
   }
 

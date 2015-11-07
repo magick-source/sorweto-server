@@ -12,6 +12,10 @@ has allowed_methods => sub { join( ',', @{ shift->methods } ) };
 
 has config  => sub { {} };
 
+sub dependences {
+  return qw(storage);
+}
+
 sub register {
   my ($self, $app, $config) = @_;
 
@@ -38,9 +42,33 @@ sub _handle_req {
     $path ||= '/';
   }
 
-  print STDERR "path: $path\n";
+  $c->res->headers->header(
+      'DAV' => '1,2,<http://apache.org/dav/propset/fs/1>'
+    );
+  $c->res->headers->header( 'MS-Author-Via' => 'DAV' );
+
+  my $cmd = "cmd_". lc $c->req->method;
+
+  print STDERR "webdav[$cmd]: $path\n";
+
+  if (my $x = UNIVERSAL::can( $self, $cmd ) ) {
+    my $parts = Mojo::Path->new->parse($path)->parts;
+
+    return $c->render_not_found
+      if @$parts and grep { $_ eq '..' } @$parts;
+
+    return $x->( $self, $c, $path );    
+  }
 
   return $self->render_error( $c, 501 );
+}
+
+sub cmd_get {
+  my ($self, $c, $path) = @_;
+
+$c->app->static->serve( $c, $c->stash( 'dav.relpath' ) );
+
+  return $c->render(text => "Just got to get\n");
 }
 
 
