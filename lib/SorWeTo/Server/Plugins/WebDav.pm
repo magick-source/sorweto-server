@@ -63,12 +63,80 @@ sub _handle_req {
   return $self->render_error( $c, 501 );
 }
 
+*cmd_post   = *not_impl;
+*cmd_trace  = *not_impl;
+
+sub not_impl {
+  my ($self, $c) = @_;
+
+  $self->render_error( $c, 501 );
+}
+
+sub cmd_put {
+  my ($self, $c, $path) = @_;
+
+  return $self->render_error( $c, 403 )
+    unless $c->req->headers->content_length;
+
+  if ($c->app->storage->is_directory( $path )) {
+    return $self->render_error( $c, 409 );
+  }
+
+  my $dir = $path;
+  $dir =~ s{\/[^\/]+$}{\/}g;
+  unless ($c->app->storage->is_directory( $path )) {
+    return $self->render_error( $c, 406 );
+  }
+
+  if ($c->app->storage->put_file( $path, \($c->req->body || '') ) ) {
+    return $c->render( text => 'created', status => 201 );
+  }
+
+  $self->render_error( $c, 500 );
+}
+
+sub cmd_mkcol {
+  my ($self, $c, $path) = @_;
+
+  return $self->render_error( $c, 403 )
+    if $path eq '/';
+
+  return $self->render_error( $c, 415 )
+    if $c->req->headers->content_length;
+
+  return $self->render_error( $c, 405 )
+    if $c->app->storage->is_file( $path );
+
+  return $self->render_error( $c, 409 )
+    unless $c->app->storage->make_dir( $path );
+
+  return $c->render( text => 'created', status => 201 );
+}
+
 sub cmd_get {
   my ($self, $c, $path) = @_;
 
-$c->app->static->serve( $c, $c->stash( 'dav.relpath' ) );
+  my ($err,$fhandle) = $c->app->storage->get_file( $path );
 
-  return $c->render(text => "Just got to get\n");
+  if ($err) {
+    return $self->render_error( $c, $err );
+
+  } elsif ($fhandle) {
+    
+    my $file = Mojo::Asset::File->new( handle => $fhandle );
+    
+    my $types = $c->app->types;
+    my $type = $path =~ /\.(\w+)$/ ? $types->type($1) : undef;
+    $c->res->headers->content_type($type || $types->type('txt'));
+
+    $c->app->static->serve_asset( $c, $file );
+    $c->stash->{'mojo.static'} = 1;
+
+    return !!$c->rendered;
+  
+  } else {
+    return $self->render_error( $c, 404 ); 
+  }
 }
 
 

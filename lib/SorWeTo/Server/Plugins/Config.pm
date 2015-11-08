@@ -59,6 +59,15 @@ sub config {
 	return wantarray ? %sec : \%sec;
 }
 
+sub keys_matching {
+  my ($self,$regex) = @_;
+
+  my @res = grep { $_ =~ m{$regex} }
+              keys %{ $self->config_data };
+  
+   return wantarray ? @res : \@res;
+}
+
 sub config_helper {
 	my $c = shift;
 
