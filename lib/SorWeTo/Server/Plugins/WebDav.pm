@@ -6,6 +6,7 @@ has mtfnpy => undef;
 has methods => sub { [qw(
                 GET HEAD OPTIONS PROPFIND DELETE PUT
                 COPY LOCK UNLOCK MOVE POST TRACE MKCOL
+                LIST
       )]
   };
 has allowed_methods => sub { join( ',', @{ shift->methods } ) };
@@ -139,6 +140,11 @@ sub cmd_get {
   }
 }
 
+sub cmd_list {
+  my ($self, $c, $path) = @_;
+
+  return $c->render( json => [{name=>'text.txt', size=>123, ctime=>12343456}]);
+}
 
 sub render_error {
   my ($self, $c, $code) = @_;
