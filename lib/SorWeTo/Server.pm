@@ -19,6 +19,7 @@ sub startup {
   }
 
   my $plugins = $self->config->config('server', 'plugins');
+  my @plugged = ();
   if ($plugins) {
     $plugins = [split /\s*[,;]\s*/, $plugins];
     my %registered = ();
@@ -26,20 +27,26 @@ sub startup {
       next unless $plugin;
       next if $registered{ $plugin };
       my $config = $self->config->config("plugin:$plugin") || {};
-      my $plugin = $self->plugins->register_plugin(
+      my $pluged = $self->plugins->register_plugin(
                         $plugin, $self, $config
                     );
       
-      if ($plugin and $plugin->can('dependences')) {
-        my @depends = $plugin->dependences();
+      if ($pluged and $pluged->can('dependences')) {
+        my @depends = $pluged->dependences();
         if (@depends) {
           push @$plugins, grep { !$registered{ $_ } } @depends;
         }
       }
+      push @plugged, $pluged;
 
       $registered{ $plugin } = 1;
     }
   }
+
+	for my $pluged ( @plugged ) {
+		next unless $pluged and $pluged->can('post_register');
+		$pluged->post_register( $self );
+	}
 
 }
 

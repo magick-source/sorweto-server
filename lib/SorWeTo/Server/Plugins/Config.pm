@@ -14,7 +14,7 @@ sub register {
 
 	$self->app($app);
 
-	my $file = $conf->{file} || $ENV{MOJO_CONFIG};
+	my $file = $ENV{SORWETO_CONFIG} || $conf->{file} || $ENV{MOJO_CONFIG};
 	$file ||= $app->moniker . '.' . ($conf->{ext} || 'ini');
 
 	$file = 'config/'.$file
@@ -74,6 +74,18 @@ sub config_helper {
 	my $self = $c->app->config;
 
 	return $self->config( @_ );
+}
+
+sub load_file {
+  my ($class, $fname) = @_;
+
+  $class = ref $class if ref $class;
+
+  my $self = bless {}, $class;
+
+  $self->_read_config( $fname );
+
+  return $self;
 }
 
 sub _read_config {
