@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title><%= $pagename %> - <%= $sitename %></title>
+  </head>
+  <body>  
+
+<%= content %>
+
+  </body>
+</html>

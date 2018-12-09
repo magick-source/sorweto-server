@@ -1,0 +1,31 @@
+% layout 'default';
+
+<div class="form_container">
+<form method="post">
+
+<table>
+<% for my $error (@$errors) { %>
+  <tr><td class="error" colspan=3><%= $error %></td></tr>
+<% } %>
+  <tr><th>Username</th><td>
+      <input name="username" value="<%= $user->{username} %>" />
+    </td><td> &nbsp; </td></tr>
+  <tr><th>Email Adress</th><td>
+      <input name="email" value="<%= $user->{email} %>" />
+    </td><td>
+      the email will be used to activate the account and send you
+      any notifications you subscribe to.
+    </td></tr>
+  <tr><th>Password</th><td>
+      <input name="password" value="<%= $user->{password} %>" />
+    </td><td> &nbsp; </td></tr>
+  <tr><th>Confirm Password</th><td>
+      <input name="password2" value="<%= $user->{password2} %>" />
+    </td><td> &nbsp; </td></tr>
+  <tr><th colspan=3 class="submit">
+      <input type="submit">
+    </th></tr>
+</table>
+
+</form>
+</div>
