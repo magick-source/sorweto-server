@@ -128,10 +128,14 @@ sub store {
  
   return unless $session and %$session;
 
+  my $value = b64_encode $self->serialize->( $session ), '';
+  $value =~ y/=/-/;
+  $value = CURRENT_COOKIE_VERSION.'+'.$value;
+
   $self->backend->store( $c, {
-          session_id => $sess_id,
-          session    => $session,
-          expires    => $expires,
+          session_id  => $sess_id,
+          value       => $value,
+          expires     => $expires,
     });
 
   return;

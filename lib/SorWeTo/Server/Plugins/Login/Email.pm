@@ -1,6 +1,8 @@
 package SorWeTo::Server::Plugins::Login::Email;
 
-use Mojo::Base qw(Mojolicious::Plugin);
+use Mojo::Base qw(SorWeTo::Server::Plugins::Login::Base);
+
+use SorWeTo::Error;
 
 use SorWeTo::Utils::DataChecks qw(
     check_email
@@ -30,7 +32,7 @@ sub _login_email {
 
 sub _new_user {
   my ($self, $c) = @_;
-  
+
   my %user = ();
   my @errors = ();
   if (my $uname = $c->param('username')) {
@@ -45,7 +47,8 @@ sub _new_user {
       push @errors, 'Invalid username - use 3 to 18 alphanumeric characters';
     }
 
-    if (my $email = $c->param('email')) {
+    my $email;
+    if ($email = $c->param('email')) {
       $user{email} = $email;
       unless (check_email( $email )) {
         push @errors, 'Invalid email address';
@@ -58,29 +61,75 @@ sub _new_user {
     if ($password = $c->param('password')) {
       $user{password} = $password;
       unless (check_password( $password, $uname )) {
-        push @errors, 'Invalid password - 8+ characters with numbers, 12+ no restrictions';
+        push @errors, 'Invalid password - 8+ characters with numbers or punctuation, 12+ no restrictions';
       }
     } else {
       push @errors, 'the Password is required';
     }
 
+    my $passhash;
     if (my $passwd2 = $c->param('password2')) {
       $user{password2} = $passwd2;
-      unless ( $password eq $passwd2 ) {
+      if ( $password eq $passwd2 ) {
+        $passhash = $self->hash_password( $password );
+      } else {
         push @errors, 'Confirmation password must match the password';
       }
     } else {
-      push @errors, 'Confirmation password is required (and match the password)';
+      push @errors, 'Confirmation password is required (and must match the password)';
     }
 
     unless (@errors) {
-      push @errors, "TODO: actually create the account\n";
-      # TODO: actually create the account!
+      eval {
+        my $user = $self->create_user_if_available( $uname );
+        if ( $user ) {
+          my %data = (
+            user_id => $user->user_id,
+            email   => $email,
+
+          );
+          $self->add_login_options( $user,
+              { login_type =>'email',
+                identifier => $email,
+                info       => {
+                  password => $passhash,
+                },
+              },
+              { login_type =>'username',
+                identifier => $user->username,
+                info       => {
+                  password => $passhash,
+                },
+              },
+            );
+
+          $c->send_email('email/login/confirm_email', {
+                email     => $email,
+                username  => $user->username,
+
+              });
+        } else {
+          push @errors, 'Username selected is not available, please try a different one';
+        }
+        1;
+      } or do {
+        my $err = $@;
+
+        unless (ref $err and $err->isa("SorWeTo::Error")) {
+          $err = SorWeTo::Error->weird(debug => $err);
+        }
+        push @errors, $err;
+      };
+      
+      unless ( @errors ) {
+        return $c->render('login/email/account_created');
+      }
     }
   }
 
   $c->stash->{user} = \%user;
   $c->stash->{errors} = \@errors;
+  $c->stash->{show_sidebar} = 0;
 
   $c->render('login/email/create_account');
 }

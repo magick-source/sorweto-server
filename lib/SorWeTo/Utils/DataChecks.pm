@@ -32,7 +32,7 @@ sub check_password {
   return if $username and $password eq $username;
 
   return if length($password)<8;
-  return if length($password)<12 and $password !~ /\d/;
+  return if length($password)<12 and $password !~ /[\d\W]/;
 
   return 1;
 }

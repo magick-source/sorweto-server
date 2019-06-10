@@ -2,13 +2,34 @@ package SorWeTo::User;
 
 use Mojo::Base -base;
 
-has username => undef;
-has user_id  => undef;
+has _user => undef;
 
-has anonymous => sub {
-  my ($user) = @_;
+sub from_dbuser {
+  my ($class, $dbuser) = @_;
 
-  return $user->user_id ? 0 : 1;
+  return SorWeTo::User->new(
+    _user => $dbuser,
+  );
+}
+
+sub username {
+  my ($self) = @_;
+
+  return unless $self->_user;
+  return $self->_user->username;
+}
+
+sub user_id {
+  my ($self) = @_;
+
+  return unless $self->_user;
+  return $self->_user->id;
+}
+
+sub anonymous {
+  my ($self) = @_;
+
+  return $self->_user ? 0 : 1;
 };
 
 1;

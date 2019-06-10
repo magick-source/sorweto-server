@@ -1,10 +1,43 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="<%= $page_description %>">
+    <meta name="author" content="<%= $author %>">
+
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/sorweto/css/main.css" rel="stylesheet" type="text/css">
+
     <title><%= $pagename %> - <%= $sitename %></title>
+
+<%= html_hook 'html_header' %>
+
   </head>
   <body>  
 
-<%= content %>
+%= include 'inc/header'
 
+<div class="container">
+  <div class="row">
+% if ($show_sidebar) {
+    <div class="col-2" id="sidebar">
+%= include 'inc/sidebar'
+    </div>
+% } else {
+    <div class="col-1"></div>
+% }
+ 
+    <div id="main-container">
+      <%= content %>
+    </div>
+
+% unless ($show_sidebar) {
+    <div class="col-1"></div>
+% }
+
+  </div>
+</div> <!-- body > .container -->
   </body>
 </html>

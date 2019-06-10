@@ -1,8 +1,6 @@
 package SorWeTo::Db;
 
-use Mojo::Base '-base';
-
-use parent 'Class::DBI';
+use Mojo::Base 'Class::DBI';
 
 sub init {
   my ($class, $dbinfo) = @_;

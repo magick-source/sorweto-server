@@ -1,0 +1,16 @@
+<div class="container" id="main-header">
+  <div class="row">
+    <div class="col-4" id="header-logo">
+% if ( stash 'logo' ) {
+      <div class="logo image">
+        <a href="<%= $sitebase %>"
+        <img src="<%= stash 'logo' %>" class="logo-img">
+      </div>
+% } else {
+      <div class="sitename title">
+        <h1><a href="<%= $sitebase %>"><%= $sitename %></a></h1>
+      </div>
+% }
+    </div>
+  </div>
+</div>
