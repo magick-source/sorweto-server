@@ -8,7 +8,8 @@ __PACKAGE__->columns( Primary => qw(id) );
 
 __PACKAGE__->columns( All => qw(
     id
-		type
+		blob_type
+	  blob_uuid
     data
     created
     expires
@@ -17,14 +18,16 @@ __PACKAGE__->columns( All => qw(
 =for MySQL
 
 CREATE TABLE `swt_tmp_blob` (
-  `id` char(40) NOT NULL,
-  `type` varchar(10) NOT NULL,
-  `data` binary(1) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `blob_type` varchar(10) DEFAULT NULL,
+  `blob_uuid` varchar(36) DEFAULT NULL,
+  `data` blob,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `expires` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`,`type`),
-	KEY `expires` (`expires`)
+  PRIMARY KEY (`id`),
+  KEY `blob_type` (`blob_type`,`blob_uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
 
 =cut
 

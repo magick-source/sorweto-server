@@ -9,6 +9,10 @@ use SorWeTo::Utils::DataChecks qw(
     check_password
   );
 
+use SorWeTo::Utils::Digests qw(
+  generate_random_hash
+);
+
 has config => sub { {} };
 
 sub register {
@@ -86,7 +90,6 @@ sub _new_user {
           my %data = (
             user_id => $user->user_id,
             email   => $email,
-
           );
           $self->add_login_options( $user,
               { login_type =>'email',
@@ -94,19 +97,17 @@ sub _new_user {
                 info       => {
                   password => $passhash,
                 },
-              },
-              { login_type =>'username',
-                identifier => $user->username,
-                info       => {
-                  password => $passhash,
-                },
-              },
+                flags      => 'pending',
+              }
             );
 
-          $c->send_email('email/login/confirm_email', {
+
+          my $tmp_id = generate_random_hash('checkemail');
+          $c->tmp_blob_store( 'checkemail', $tmp_id, \%data );
+          $c->send_email('login/confirm_email', {
                 email     => $email,
                 username  => $user->username,
-
+                blob_id   => $tmp_id,
               });
         } else {
           push @errors, 'Username selected is not available, please try a different one';

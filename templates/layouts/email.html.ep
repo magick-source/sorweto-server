@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="<%= $page_description %>">
+    <meta name="author" content="<%= $author %>">
+
+    <title><%= $pagename %> - <%= $sitename %></title>
+
+  </head>
+  <body>  
+
+<div class="container">
+  <%= content %>
+</div> <!-- body > .container -->
+  </body>
+</html>

@@ -9,6 +9,8 @@ use SorWeTo::Db::TmpBlob;
 use SorWeTo::User;
 use SorWeTo::Error;
 
+use SorWeTo::Utils::Digests qw();
+
 use JSON qw(from_json to_json);
 
 use Digest::SHA qw(sha256_hex);
@@ -58,37 +60,16 @@ sub add_login_options {
 }
 
 
-my @letters = ('a'..'z','0'..'9','A'..'Z');
 sub hash_password {
   my ($self, $password) = @_;
 
-  my $salt = $letters[int rand(scalar @letters)]
-           . $letters[int rand(scalar @letters)]
-           . $letters[int rand(scalar @letters)];
-
-  return __make_hash( $password, $salt );
+  return SorWeTo::Utils::Digests::make_salted_hash( $password );
 }
 
 sub check_password {
   my ($self, $password, $hash) = @_;
 
-  my $salt = substr( $hash, 1, 3 );
-
-  my $tmp_hash = __make_hash( $password, $salt );
-  return ($tmp_hash eq $hash);
-}
-
-
-sub __make_hash {
-  my ($password, $salt) = @_;
-
-  my $res = sha256_hex( $password.$salt );
-  my $start = hex(substr($res, 0, 1));
-  $res = substr($res, $start, 15);
-  $res = "<$salt>$res";
-
-  return $res;
-
+  return SorWeTo::Utils::Digests::check_salted_hash( $password );
 }
 
 1;

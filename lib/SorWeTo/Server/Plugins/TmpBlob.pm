@@ -6,6 +6,11 @@ package SorWeTo::Server::Plugins::TmpBlob;
 use Mojo::Base qw(Mojolicious::Plugin);
 
 use SorWeTo::Db::TmpBlob;
+use SorWeTo::Utils::Digests qw(
+    generate_random_hash
+    repeatable_hash
+    hash2uuid
+  );
 
 use Mojo::JSON;
 
@@ -40,6 +45,14 @@ sub store_blob {
     $value = Mojo::JSON::encode_json( $value );
   }
 
+  if ( !$blob_id ) {
+    $blob_id = generate_random_hash( $blob_type );
+  } elsif ( $blob_id !~ m{\A[0-9a-f]{30}\z} ) {
+    $blob_id = repeatable_hash( $blob_type, $blob_id );
+  }
+ 
+  my $blob_uuid = hash2uuid( $blob_id );
+
   # by default, expire all blobs in 36 hours - not perfect for sessions
   # but a nice default for several of the other use cases.
   $expires ||= '36h';
@@ -58,13 +71,18 @@ sub store_blob {
 
 
   SorWeTo::Db::TmpBlob->insert({
-    id      => $blob_id,
-    type    => $blob_type,
-    data    => $value,
-    expires => $expires,
+    blob_type    => $blob_type,
+    blob_uuid    => $blob_uuid,
+    data         => $value,
+    expires      => $expires,
   });
 
-  return;
+  return $blob_id;
+}
+
+sub delete_blob {
+  my ($c, $blob_type, $blob_id) = @_;
+
 }
 
 1;
