@@ -27,6 +27,16 @@ sub register {
 sub load_blob {
   my ($c, $blob_type, $blob_id) = @_;
 
+  my $blob_uuid = hash2uuid( $blob_id );
+  my ($rec) = SorWeTo::Db::TmpBlob->search_where({
+      blob_type => $blob_type,
+      blob_uuid => $blob_uuid,
+      expires   => { '<' => time },
+    });
+
+  $c->evinfo("Asked to load blob '$blob_type:$blob_id': %s", $rec);
+
+  return;
 }
 
 my %multipliers = (
@@ -58,7 +68,7 @@ sub store_blob {
   $expires ||= '36h';
 
   if (my ($cnt, $unit) = $expires =~ m{\A(\d+)([smhdwmy])\z}) {
-    my $expires = time + $cnt * $multipliers{ $unit };
+    $expires = time + $cnt * $multipliers{ $unit };
   } elsif ($expires=~m{\A\d+\z} and $expires< 100_000) {
     $expires += time;
   } elsif ( $expires =~ m{\D} ) {

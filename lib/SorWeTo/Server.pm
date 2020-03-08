@@ -8,6 +8,8 @@ has config => undef;
 
 has last_hostname => undef;
 
+has evlog => undef;
+
 sub startup {
   my $self = shift;
 
@@ -54,6 +56,11 @@ sub startup {
   $self->renderer->add_helper('html_hook', \&_html_hook_handler );
 
   my $plugins = $self->config->config('server', 'plugins');
+
+  # We always want to have the evlog system around!
+  unless ($plugins =~ m{\blog\b}) {
+    $plugins = $plugins ? "log,$plugins" : 'log';
+  }
   my @plugged = ();
   if ($plugins) {
     my @plugins = split /\s*[,;]\s*/, $plugins;

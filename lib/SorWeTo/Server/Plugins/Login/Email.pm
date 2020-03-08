@@ -24,6 +24,9 @@ sub register {
 
   $r->route('/login/email')->to(cb => sub { $self->_login_email( @_ ) } );
   $r->route('/create_account/email')->to(cb => sub { $self->_new_user( @_ );});
+  $r->route('/login/confirm_email/:token')->to(cb => sub {
+      $self->_confirm_email( @_ );
+    });
 
   return $self;
 }
@@ -105,6 +108,7 @@ sub _new_user {
           my $tmp_id = generate_random_hash('checkemail');
           $c->tmp_blob_store( 'checkemail', $tmp_id, \%data );
           $c->send_email('login/confirm_email', {
+                email_type=> 'confirm-email',
                 email     => $email,
                 username  => $user->username,
                 blob_id   => $tmp_id,
@@ -133,6 +137,21 @@ sub _new_user {
   $c->stash->{show_sidebar} = 0;
 
   $c->render('login/email/create_account');
+}
+
+sub _confirm_email {
+  my ($self, $c) = @_;
+
+  my $token = $c->param('token');
+
+  my $data  = $c->tmp_blob_load( 'checkemail', $token );
+  unless ($data) {
+    # TODO: Fail when we don't have a blob
+  }
+  $c->evinfo("Data to confirm email: %s", $data);
+
+
+  $c->render( text => 'Just some text to render');
 }
 
 1;
