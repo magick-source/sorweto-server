@@ -1,5 +1,4 @@
 <div class="error">
-Logged in access don't work without the hability to track you.
+<%= __('error-logged-in-no-track') %>
 
-Logout first if you want us to stop tracking you!
 </div>

@@ -1,0 +1,5 @@
+# Dev version of the Basic translations used in the templates
+
+# lib/SorWeTo/Server/Plugins/Login/Email.pm
+confirm-email-subject = { $sitename } - Confirm your email address
+

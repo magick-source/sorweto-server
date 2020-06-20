@@ -7,19 +7,16 @@
 <% for my $error (@$errors) { %>
   <tr><td class="error" colspan=3><%= $error %></td></tr>
 <% } %>
-  <tr><th>Username</th><td>
+  <tr><th><%= __('fieldname-username') %></th><td>
       <input name="username" value="<%= $user->{username} %>" />
     </td><td> &nbsp; </td></tr>
-  <tr><th>Email Adress</th><td>
+  <tr><th><%= __('fieldname-email-address') %></th><td>
       <input name="email" value="<%= $user->{email} %>" />
-    </td><td>
-      the email will be used to activate the account and send you
-      any notifications you subscribe to.
-    </td></tr>
-  <tr><th>Password</th><td>
+    </td><td> <%= __('create-account--email-info') %> </td></tr>
+  <tr><th><%= __('fieldname-password') %></th><td>
       <input type="password" name="password" value="<%= $user->{password} %>" />
     </td><td> &nbsp; </td></tr>
-  <tr><th>Confirm Password</th><td>
+  <tr><th><%= __('fieldname-confirm-password') %></th><td>
       <input type="password" name="password2" value="<%= $user->{password2} %>" />
     </td><td> &nbsp; </td></tr>
   <tr><th colspan=3 class="submit">

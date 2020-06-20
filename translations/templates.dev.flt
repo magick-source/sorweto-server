@@ -1,0 +1,28 @@
+# Dev version of the Basic translations used in the templates
+
+# Strings used in multiple places
+fieldname-username      = Username
+fieldname-email-address = Email Address
+fieldname-password      = Password
+fieldname-confirm-password = Confirm Password
+
+# email/login/confirm_email.html.ep
+
+confirm-email-header = Confirm Email Address
+confirm-email-hello  = Hello, { $username }
+confirm-email-why    = You are getting this email because someone tried to
+    create an account in the website '{ $sitename }'. If you didn't do
+    it, please ignore this email.
+
+confirm-email-more-about = Click to know more about { $sitename }
+confirm-email-to-confirm = To confirm your email address and activate your
+    account, click the button:
+
+confirm-email-confirm-button = Confirm email address
+
+# login/email/create_account.html.ep
+
+create-account--email-info = the email will be used to activate the account
+    and send you any notifications you subscribe to.
+
+

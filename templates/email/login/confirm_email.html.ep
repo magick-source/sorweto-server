@@ -1,16 +1,16 @@
 % layout 'email';
 
 <div>
-  <h1> Confirm Email Address </h1>
-  <p>Hello, <%= $username %></p>
-  <p>You are getting this email because someone tried to create an account
-     in the website <a href="<%= url_for("/")->to_abs() %>"><%= $sitename %></a>.
-     If you didn't do it, please ignore this email.</p>
-  <p>To confirm your email address and activate your account, click
-     the button:</p>
+  <h1> <%= __('confirm-email-address') %> </h1>
+  <p><%= __('confirm-email-hello', username => $username ) %></p>
+  <p><%= __('confirm-email-why', sitename => $sitename ) %></p>
+  <p><a href="<%= url_for("/")->to_abs() %>">
+    <%= __('confirm-email-more-about', sitename => $sitename) %>
+  </a></p>
+  <p><%= __('confirm-email-to-confirm') %></p>
   <div style="margin-left:auto; margin-right: auto; border: 1px solid red; padding:10px; font-size: 2em;">
-    <a href="<%= url_for("/login/confirm_email/".$blob_id.".html")->to_abs() %>">
-      Confirm email address
+    <a href="<%= $confirm_url %>">
+      <%= __('confirm-email-confirm-button') %>
     </a>
   </div>
 </div>

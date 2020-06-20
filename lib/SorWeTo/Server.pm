@@ -10,6 +10,8 @@ has last_hostname => undef;
 
 has evlog => undef;
 
+has translations => undef;
+
 sub startup {
   my $self = shift;
 
@@ -43,6 +45,8 @@ sub startup {
   $defaults->{page_description} = '';
   $defaults->{author}           = '';
   $defaults->{show_sidebar}     = 1;
+  $defaults->{default_language} = $self->config->config('_', 'default_language')
+                               || 'en';
 
   my $namespaces = $self->config->config('server','namespaces');
   if ($namespaces) {
@@ -55,11 +59,15 @@ sub startup {
 
   $self->renderer->add_helper('html_hook', \&_html_hook_handler );
 
-  my $plugins = $self->config->config('server', 'plugins');
+  my $plugins = $self->config->config('server', 'plugins') // '';
 
+  # we always want to have translations handy
+  unless ($plugins =~ m{\btranslate\b}) {
+    $plugins = $plugins ? "translate,$plugins" : 'translate';
+  }
   # We always want to have the evlog system around!
   unless ($plugins =~ m{\blog\b}) {
-    $plugins = $plugins ? "log,$plugins" : 'log';
+    $plugins = 'log,'.$plugins; # by now it should have at least translate
   }
   my @plugged = ();
   if ($plugins) {
@@ -91,7 +99,6 @@ sub startup {
 		next unless $pluged and $pluged->can('post_register');
 		$pluged->post_register( $self );
 	}
-
 }
 
 sub _html_hook_handler {
