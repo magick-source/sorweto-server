@@ -20,16 +20,14 @@ sub send_email {
   }
 
   my $old_stash = $c->stash;
+  $data->{template} = "email/$template_name";
+  $data->{format}   = 'html';
+
   $c->stash( $data );
 
   my ($output, $format) = $c->app->renderer->render(
-      $c,
-#      Mojolicious::Controller->new( stash => $data ),
-      { template => "email/$template_name",
-        format   => 'html',
-      }
+      $c
     );
-
 
   $c->stash( $old_stash );
 
@@ -63,10 +61,12 @@ sub send_email {
 
   $smtp->mail( $config->{from_email} );
   if ( $smtp->to( $send_to ) ) {
-    $smtp->data( "Subject: $data->{subject}\n");
-    $smtp->data( "To: $send_to\n" );
-    $smtp->data( "\n" ); # End of the header
-    $smtp->data( $output );
+    $smtp->data();
+    $smtp->datasend( "Subject: $data->{subject}\n");
+    $smtp->datasend( "To: $send_to\n" );
+    $smtp->datasend( "Content-Type: text/html; charset=UTF-8\n"); 
+    $smtp->datasend( "\n" ); # End of the header
+    $smtp->datasend( $output );
     $smtp->dataend();
 
   } else {
@@ -84,9 +84,6 @@ sub send_email {
     $tweet =~ s{\-+}{-}g;
     $c->tweet( $tweet );
   }
-  
-  #TODO: Remove this debug
-  print STDERR "email:\n$output\n--------------------\n*********\n";
 } 
  
 1;
