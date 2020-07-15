@@ -9,12 +9,6 @@ has tmpblob_type => 'session';
 sub load {
   my ($self, $c, $sess_id) = @_;
 
-  unless ($c->can('tmp_blob_load')) {
-    die SorWeTo::Error->weird(
-        debug => "TmpBlob plugin not loaded"
-      );
-  }
-
   return $c->tmp_blob_load( $self->tmpblob_type, $sess_id );
 }
 

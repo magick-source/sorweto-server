@@ -63,6 +63,9 @@ sub load {
   $stash->{'mojo.session_id'} = $sess_id;
   $session->{flash} = delete $session->{new_flash} if $session->{new_flash};
 
+  # we only really care if it was empty or not
+  $stash->{'swt.session_loaded_keys'} = keys %$session;
+
   return;
 }
 
@@ -83,7 +86,8 @@ sub store {
     $sess_id = $stash->{'mojo.session_id'};
   }
   unless ($stash->{_do_not_track_}) {
-    if ( $sess_id eq 'DoNotTrack' or ($session and keys %$session)) {
+    if ( ($sess_id and $sess_id eq 'DoNotTrack')
+        or ($session and keys %$session)) {
       if (!defined $sess_id or $sess_id eq 'DoNotTrack') {
         $sess_id = _generate_session_id();
       }
@@ -97,7 +101,7 @@ sub store {
 
   # Generate "expire" value from "expiration" if necessary
   my $expiration = $session->{expiration};
-  unless ($expiration) {
+  unless (defined $expiration) {
     $expiration = $sess_id eq 'DoNotTrack'
         # We want the do not track session to last for a year
         # not just 1 hour - that would not be much of a no tracking
@@ -125,12 +129,34 @@ sub store {
     secure   => $self->secure,
   };
   $c->signed_cookie($self->cookie_name, $sess_id, $options);
- 
-  return unless $session and %$session;
+
+  # it doesn't matter what's in the session, it is just a trow out
+  # if the user doesn't want to be tracked, they can only use features
+  # that don't need any type of session. Any mechanism that allows passing
+  # data from one request to the next would allow tracking
+  return if $sess_id eq 'DoNotTrack';
+
+  # we need to save the session if it have data
+  # or if the version we have stored had data
+  # This doesn't update the expiration date of the
+  # session data itself, but as it is empty, it doesn't matter
+  my $needs_saved = ($session and %$session);
+  $needs_saved  ||= $c->stash->{'swt.session_loaded_keys'};
+  return unless $needs_saved;
+
+  if ($expires) {
+    $session->{expires} = $expires;
+  }
 
   my $value = b64_encode $self->serialize->( $session ), '';
   $value =~ y/=/-/;
   $value = CURRENT_COOKIE_VERSION.'+'.$value;
+
+  #TODO(maybe): calculate some digest of the serialized data and
+  #     and compare that with the version already store
+  #     to see if it is worth updating the database
+  #     That would imply moving the expiration time out of the
+  #     serialized blob, but that may not be a problem
 
   $self->backend->store( $c, {
           session_id  => $sess_id,
@@ -145,7 +171,7 @@ sub _generate_session_id {
   my $digest = Digest::SHA->new( 256 )
           ->add( $$, +{}, Time::HiRes::time(), rand(time()) )
           ->hexdigest();
-  return substr( $digest, hex(substr($digest, 0, 1)), 12 );
+  return substr( $digest, hex(substr($digest, 0, 1)), 16 );
 }
 
 1;
