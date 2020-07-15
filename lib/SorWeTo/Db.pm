@@ -2,6 +2,8 @@ package SorWeTo::Db;
 
 use Mojo::Base 'Class::DBI';
 
+# TODO: create an insert_or_update method that will use UDKU
+
 sub init {
   my ($class, $dbinfo) = @_;
 
