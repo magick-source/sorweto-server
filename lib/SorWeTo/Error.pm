@@ -22,6 +22,15 @@ sub stringify {
   return "ERROR: ".$self->message."\n\n";
 }
 
+sub TO_JSON {
+  my ($self) = @_;
+
+  return {
+      error_type  => $self->error_type,
+      message     => $self->message,
+    };
+}
+
 sub weird {
   my ($class, %data) = @_;
 
