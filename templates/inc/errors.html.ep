@@ -1,0 +1,17 @@
+% my @errors = @{ flash('errors') || [] };
+% push @errors, @{ stash('errors') || [] };
+
+% if ( @errors ) {
+<div class="errors">
+ERRORS HERE: 
+<%= dumper \@errors %>
+%   for my $error (@errors) {
+%     $error = { error_type => 'error', message => $error }
+%       unless ref $error;
+  <div class="error-<%= $error->{error_type} %>">
+    <%= $error->{message} %>
+  </div>
+
+%   }
+</div>
+% }

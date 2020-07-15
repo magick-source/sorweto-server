@@ -30,6 +30,9 @@
 % }
  
     <div id="main-container">
+
+%= include 'inc/errors'
+
       <%= content %>
     </div>
 
