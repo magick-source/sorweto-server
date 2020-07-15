@@ -30,6 +30,8 @@ sub register {
     my $plugin = $self->plugins->register_plugin(
         $backend, $self, $config
       );
+
+    $self->_plugins->{$backend} = $plugin;
   }
 
   my $r = $app->routes;
@@ -41,7 +43,21 @@ sub register {
 sub _login_page {
   my ($self, $c) = @_;
 
-  $c->render(template => 'login/login');
+  my %login_data = ();
+  for my $backend (values %{$self->_plugins}) {
+    $backend->set_loginform_data( $c, \%login_data )
+      if $backend->can('set_loginform_data');
+  }
+  $c->stash->{login_data} = \%login_data;
+
+  my $ses_flash = $c->session->{flash};
+  my $flash = $c->flash('errors');
+  use Data::Dumper;
+  print STDERR "flash: ", Dumper($ses_flash, $flash),"\n";
+
+  my @backends = keys %{ $self->_plugins };
+  $c->stash->{backends} = \@backends;
+  $c->render(template => 'login/login' );
 }
 
 

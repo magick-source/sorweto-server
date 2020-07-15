@@ -5,4 +5,18 @@
 error-logged-in-no-track = Logged in access don't work without the hability
     to track you. Logout first if you want us to stop tracking you!
 
+# login/email/error_confirming_email.html.ep
+
+error-confirming-email = The link used is not valid. Maybe it expired or you
+    did already confirm your email?
+
+# login/backends/email.html.ep
+
+login-with-email-title = Login with username or email
+
+# lib/SorWeTo/Server/Plugins/Login/Email.pm
+
+error-login-username-or-password-missing = Both username and password
+    are needed. Please type both.
+
 

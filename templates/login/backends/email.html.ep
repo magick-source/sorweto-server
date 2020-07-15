@@ -1,0 +1,15 @@
+<div class="login_email login_backend">
+  <h2> <%= __('login-with-email-title') %> </h2>
+  <form action="<%= url_for('/login/email') %>" method="post">
+% my $fdata = $login_data->{email} || {};
+  <p><b><%= __('fieldname-username-or-email') %></b>
+    <input name="username" value="<%= $fdata->{username} %>" />
+  </p>
+  <p><b><%= __('fieldname-password') %></b>
+    <input type="password" name="password" value="<%= $fdata->{password} %>" />
+  </p>
+  <p class="buttons">
+    <button><%= __('buttonlabel-login') %></button>
+  </p>
+  </form>
+</div>

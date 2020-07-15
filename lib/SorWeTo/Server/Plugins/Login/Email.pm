@@ -31,8 +31,44 @@ sub register {
   return $self;
 }
 
+sub set_loginform_data {
+  my ($self, $c, $login_data) = @_;
+
+  $login_data->{email} = {
+    username  => '',
+    password  => '',
+  };
+  
+  if (my $filledup = $c->flash('email_login')) {
+    $login_data->{email} = $filledup;
+  }
+
+  return;
+}
+
 sub _login_email {
   my ($self, $c) = @_;
+
+  my $username  = $c->param('username');
+  my $passwd    = $c->param('password');
+  my @errors    = ();
+
+  unless ($username and $passwd) {
+    push @errors, $self->_user_error(
+        $c->__('error-login-username-or-password-missing')
+      );
+
+    $c->flash({
+        email_login => {
+          username  => $username,
+          password  => $passwd,
+        },
+        errors    => \@errors,
+      });
+    return $c->redirect_to('/login/');
+  }
+
+  
 
   $c->render( text => 'Just some text to render');
 }
@@ -112,6 +148,8 @@ sub _new_user {
                 email     => $email,
                 username  => $user->username,
                 blob_id   => $tmp_id,
+                confirm_url =>
+                   => $c->url_for("/login/confirm_email/$tmp_id")->to_abs,
               });
         } else {
           push @errors, 'Username selected is not available, please try a different one';
@@ -146,12 +184,27 @@ sub _confirm_email {
 
   my $data  = $c->tmp_blob_load( 'checkemail', $token );
   unless ($data) {
-    # TODO: Fail when we don't have a blob
+    #TODO: maybe block IPs who fall here a few times
+    return $c->render('login/email/error_confirming_email');
   }
-  $c->evinfo("Data to confirm email: %s", $data);
 
+  my ($user_login) = $self->get_login_option('email', $data->{email});
+  unless ($user_login) {
+    # This should not really happen, but... you never know, right?
+    $c->evwarn('Valid tmp_blog for email confirmation, but no user_login');
+    return $c->render('login/email/error_confirming_email');
+  }
 
-  $c->render( text => 'Just some text to render');
+  $user_login->user_id;
+
+  #MAYBE: add a 'set_flag' method in SorWeTo::Db?
+  $user_login->flags('active');
+  $user_login->update;
+
+  # Email confirmed, no need for the blob anymore
+  $c->tmp_blob_delete('checkemail', $token );
+
+  $c->render( 'login/email/email_confirmed');
 }
 
 1;

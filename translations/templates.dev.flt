@@ -6,6 +6,8 @@ fieldname-email-address = Email Address
 fieldname-password      = Password
 fieldname-confirm-password = Confirm Password
 
+login-to-proceed        = Login to Proceed
+
 # email/login/confirm_email.html.ep
 
 confirm-email-header = Confirm Email Address
@@ -25,4 +27,10 @@ confirm-email-confirm-button = Confirm email address
 create-account--email-info = the email will be used to activate the account
     and send you any notifications you subscribe to.
 
+# login/email/email_confirmed.html.ep
 
+email-confirmed-successfully = Your email was confirmed successfully.
+
+# login/backends/email.html.ep
+fieldname-username-or-email   = Username or Password
+buttonlabel-login             = Login

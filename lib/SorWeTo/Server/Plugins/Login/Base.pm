@@ -13,8 +13,6 @@ use SorWeTo::Utils::Digests qw();
 
 use JSON qw(from_json to_json);
 
-use Digest::SHA qw(sha256_hex);
-
 sub create_user_if_available {
   my ($self, $username, $user_data) = @_;
 
@@ -38,7 +36,6 @@ sub create_user_if_available {
   return $user;
 }
 
-
 sub add_login_options {
   my ($self, $user, @logins) = @_;
 
@@ -48,9 +45,9 @@ sub add_login_options {
 
   for my $login (@logins) {
     my $rec = {
+        flags   => 'active', # can be overriden by the backends
         %$login,
         user_id => $user->user_id,
-        flags   => 'active',
       };
     if ($rec->{info} and ref $rec->{info}) {
       $rec->{info} = to_json( $rec->{info}, {utf8=>1} );
@@ -59,6 +56,30 @@ sub add_login_options {
   }
 }
 
+sub get_login_option {
+  my ($self, $type, $identifier) = @_;
+
+  my ($rec) = SorWeTo::Db::UserLogin->search({
+      login_type  => $type,
+      identifier  => $identifier,
+    });
+
+  return $rec;
+}
+
+sub get_login_option_by_username {
+  my ($self, $type, $username) = @_;
+
+  my ($user) = SorWeTo::Db::User->search({ username => $username });
+  return unless $user;
+
+  my ($rec) = SorWeTo::Db::UserLogin->search({
+      login_type  => $type,
+      user_id     => $user->id,
+    });
+
+  return $rec;
+}
 
 sub hash_password {
   my ($self, $password) = @_;
@@ -66,10 +87,29 @@ sub hash_password {
   return SorWeTo::Utils::Digests::make_salted_hash( $password );
 }
 
-sub check_password {
+sub is_password_correct {
   my ($self, $password, $hash) = @_;
 
   return SorWeTo::Utils::Digests::check_salted_hash( $password );
+}
+
+sub _user_error {
+  my ($self, $message, @args) = @_;
+
+  return SorWeTo::Error->new(
+      message => $message,
+      @args,
+    );
+}
+
+sub _user_warning {
+  my ($self, $message, @args) = @_;
+
+  return SorWeTo::Error->new(
+      message     => $message,
+      error_type  => 'warning',
+      @args,
+    );
 }
 
 1;

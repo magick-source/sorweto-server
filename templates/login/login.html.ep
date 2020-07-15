@@ -1,6 +1,10 @@
 % layout 'default';
 
 <div>
+
+% for my $backend (@$backends) {
+%=    include_maybe "login/backends/$backend";
+% }
   Login not working yet.
   <a href="/create_account/email.html">
     Create account with email
