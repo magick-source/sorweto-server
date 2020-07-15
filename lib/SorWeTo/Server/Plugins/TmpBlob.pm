@@ -5,6 +5,7 @@ package SorWeTo::Server::Plugins::TmpBlob;
 
 use Mojo::Base qw(Mojolicious::Plugin);
 
+use SorWeTo::Error;
 use SorWeTo::Db::TmpBlob;
 use SorWeTo::Utils::Digests qw(
     generate_random_hash
@@ -27,16 +28,27 @@ sub register {
 sub load_blob {
   my ($c, $blob_type, $blob_id) = @_;
 
+  unless ($blob_id =~ m{\A[0-9a-f]{30}\z}) {
+    $blob_id = repeatable_hash( $blob_type, $blob_id );
+  }
+
   my $blob_uuid = hash2uuid( $blob_id );
-  my ($rec) = SorWeTo::Db::TmpBlob->search_where({
+  my ($rec) = SorWeTo::Db::TmpBlob->search({
       blob_type => $blob_type,
       blob_uuid => $blob_uuid,
-      expires   => { '<' => time },
     });
 
-  $c->evinfo("Asked to load blob '$blob_type:$blob_id': %s", $rec);
+  return unless $rec and $rec->expires > time;
 
-  return;
+  my $data;
+  eval {
+    $data = Mojo::JSON::decode_json( $rec->data );
+    1;
+  } or do {
+    $data = $rec->data;
+  };
+
+  return $data;
 }
 
 my %multipliers = (
@@ -79,13 +91,34 @@ sub store_blob {
     $expires = time + 1*60; # giving it 1 minute, just in case
   }
 
+  eval {
+    SorWeTo::Db::TmpBlob->insert({
+      blob_type    => $blob_type,
+      blob_uuid    => $blob_uuid,
+      data         => $value,
+      expires      => $expires,
+    });
+    1;
+  } or do {
+    my $err = $@;
 
-  SorWeTo::Db::TmpBlob->insert({
-    blob_type    => $blob_type,
-    blob_uuid    => $blob_uuid,
-    data         => $value,
-    expires      => $expires,
-  });
+    if ( $err =~ m{execute failed: Duplicate entry}) {
+
+      my ($rec) = SorWeTo::Db::TmpBlob->search({
+          blob_type => $blob_type,
+          blob_uuid => $blob_uuid,
+        });
+
+      $rec->data(     $value    );
+      $rec->expires(  $expires  );
+      $rec->update;
+
+    } else {
+      die SorWeTo::Error->weird(
+          debug => $err,
+        );
+    }
+  };
 
   return $blob_id;
 }
@@ -93,6 +126,25 @@ sub store_blob {
 sub delete_blob {
   my ($c, $blob_type, $blob_id) = @_;
 
+  $c->evinfo("deleting tmp_blog '$blob_type/$blob_id'");
+
+  unless ($blob_id =~ m{\A[0-9a-f]{30}\z}) {
+    $blob_id = repeatable_hash( $blob_type, $blob_id );
+  }
+  my $blob_uuid = hash2uuid( $blob_id );
+
+  my ($rec) = SorWeTo::Db::TmpBlob->search({
+      blob_type => $blob_type,
+      blob_uuid => $blob_uuid,
+    });
+
+  if ($rec) {
+    $rec->delete;
+  }
+
+  return;
 }
+
+#TODO: Delete expired blobs!
 
 1;

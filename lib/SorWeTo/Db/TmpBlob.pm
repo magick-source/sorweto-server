@@ -11,7 +11,7 @@ __PACKAGE__->columns( All => qw(
 		blob_type
 	  blob_uuid
     data
-    created
+    sql_last_updated
     expires
   ));
 
@@ -22,10 +22,10 @@ CREATE TABLE `swt_tmp_blob` (
   `blob_type` varchar(10) DEFAULT NULL,
   `blob_uuid` varchar(36) DEFAULT NULL,
   `data` blob,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `sql_last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `expires` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `blob_type` (`blob_type`,`blob_uuid`)
+  UNIQUE `blob_type` (`blob_type`,`blob_uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
 
