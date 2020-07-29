@@ -22,33 +22,21 @@
 <%= html_hook 'html_header' %>
 
   </head>
-  <body>  
+  <body class="antialiased border-top-wide border-primary d-flex flex-column">  
 
-%= include 'inc/header'
+<div class="flex-fill d-flex flex-column justify-content-center">
+  <div class="container-tight py-6">
 
-<div class="container">
-  <div class="row">
-% if ($show_sidebar) {
-    <div class="col-2" id="sidebar">
-%= include 'inc/sidebar'
-    </div>
-% } else {
-    <div class="col-1"></div>
-% }
- 
-    <div id="main-container">
+%= include 'inc/basic-header'
+
+  
 
 %= include 'inc/errors'
 
-      <%= content %>
-    </div>
-
-% unless ($show_sidebar) {
-    <div class="col-1"></div>
-% }
+<%= content %>
 
   </div>
-</div> <!-- body > .container -->
+</div>
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/tabler/js/tabler.min.js"></script>

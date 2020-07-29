@@ -13,7 +13,7 @@
     <meta name="HandheldFriendly" content="True"/>
     <meta name="MobileOptimized" content="320"/>
 
-    <link href="/vendor/tabler/css/tabler.min.css" rel="stylesheet" type="text/css" />
+    <link href="/vender/tabler/css/tabler.min.css" rel="stylesheet" type="text/css" />
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="/sorweto/css/main.css" rel="stylesheet" type="text/css">
 
@@ -51,7 +51,7 @@
 </div> <!-- body > .container -->
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/tabler/js/tabler.min.js"></script>
+    <script src="/devdor/tabler/js/tabler.min.js"></script>
 <%= html_hook 'html_body_end' %>
   </body>
 </html>

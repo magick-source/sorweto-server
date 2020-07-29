@@ -1,28 +1,54 @@
-% layout 'default';
+% layout 'basic';
 
-<div class="form_container">
-<form method="post">
+<div class="card card-md create_account_email">
+  <form method="post">
+    <div class="card-body">
+      <h2 class="mb-5 text-center"> <%= __('create-account--title') %></h2>
 
-<table>
-<% for my $error (@$errors) { %>
-  <tr><td class="error" colspan=3><%= $error %></td></tr>
-<% } %>
-  <tr><th><%= __('fieldname-username') %></th><td>
-      <input name="username" value="<%= $user->{username} %>" />
-    </td><td> &nbsp; </td></tr>
-  <tr><th><%= __('fieldname-email-address') %></th><td>
-      <input name="email" value="<%= $user->{email} %>" />
-    </td><td> <%= __('create-account--email-info') %> </td></tr>
-  <tr><th><%= __('fieldname-password') %></th><td>
-      <input type="password" name="password" value="<%= $user->{password} %>" />
-    </td><td> &nbsp; </td></tr>
-  <tr><th><%= __('fieldname-confirm-password') %></th><td>
-      <input type="password" name="password2" value="<%= $user->{password2} %>" />
-    </td><td> &nbsp; </td></tr>
-  <tr><th colspan=3 class="submit">
-      <input type="submit">
-    </th></tr>
-</table>
+      <div class="mb-3">
+        <label class="form-label">
+          <%= __('fieldname-username') %>
+        </label>
+        <input name="username" value="<%= $user->{username} %>"
+          placeholder="<%= __('login-email-placeholder-username') %>"
+          class="form-control" autocomplete="off" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">
+          <%= __('fieldname-email-address') %>
+          <span class="form-label-description">
+            <i class="fa fa-info-circle data-toggle="tooltip"
+              data-placement="top"
+              title="<%= __('create-account--email-info') %>"></i>
+          </span>
+        </label>
+        <input name="email" value="<%= $user->{email} %>"
+          placeholder="<%= __('login-email-placeholder-password') %>"
+          class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">
+          <%= __('fieldname-password') %>
+        </label>
+        <input type="password" name="password" value="<%= $user->{password} %>"
+          placeholder="<%= __('login-email-placeholder-password') %>"
+          class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-control">
+          <%= __('fieldname-confirm-password') %>
+        </label>
+        <input type="password" name="password2"
+          value="<%= $user->{password2} %>"
+          placeholder="<%= __('login-email-placeholder-password2') %>"
+          class="form-control" />
+      </div>
+    <div>
 
-</form>
+    <div class="form-footer">
+      <button type="submit" class="btn btn-primary btn-block">
+        <%= __('buttonlabel-create-account') %>
+      </button>
+    </div>
+    </form>
 </div>

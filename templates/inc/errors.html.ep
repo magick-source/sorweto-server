@@ -1,14 +1,26 @@
 % my @errors = @{ flash('errors') || [] };
 % push @errors, @{ stash('errors') || [] };
+% my %type_map = ( error  => 'danger' );
+% my %icon_map = (
+%     error   => 'times',
+%     warning => 'exclamation',
+%     info    => 'info',
+% );
 
 % if ( @errors ) {
 <div class="errors">
 ERRORS HERE: 
 <%= dumper \@errors %>
 %   for my $error (@errors) {
-%     $error = { error_type => 'error', message => $error }
+%     $error = { error_type => 'danger', message => $error }
 %       unless ref $error;
-  <div class="error-<%= $error->{error_type} %>">
+%     my $type = $type_map{ $error->{error_type} } || $error->{error_type};
+%     my $extra = $error->{icon} ? "alert-icon":""; 
+  <div class="alert alert-<%= $type %> <%= $extra %>" role="alert">
+%     if ($error->{icon}) {
+%       my $icon = $icon_map{ $error->{icon} } || $error->{icon};
+    <i class="fa fa-<%= $icon %> mr-2" aria-hidden="true"></i>
+%     }
     <%= $error->{message} %>
   </div>
 

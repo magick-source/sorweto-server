@@ -1,12 +1,16 @@
-% layout 'default';
+% layout 'basic';
 
-<div>
-
+<div class="card card-md">
+  <div class="card-body">
 % for my $backend (@$backends) {
 %=    include_maybe "login/backends/$backend";
 % }
-  Login not working yet.
+  </div>
+</div>
+
+<div class="text-center text-muted">
+  <%= __('login-form-no-account-yet') %>
   <a href="/create_account/email.html">
-    Create account with email
+    <%= __('login-form-sign-up') %>
   </a>
 </div>

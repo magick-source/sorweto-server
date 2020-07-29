@@ -1,0 +1,13 @@
+<div class="text-center mb-4">
+% if ( stash 'logo' ) {
+  <div class="logo image">
+    <a href="<%= $sitebase %>"
+      <img src="<%= stash 'logo' %>" class="logo-img">
+    </a>
+  </div>
+% } else {
+  <div class="sitename title">
+    <h1><a href="<%= $sitebase %>"><%= $sitename %></a></h1>
+  </div>
+% }
+</div>
