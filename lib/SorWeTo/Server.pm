@@ -65,6 +65,10 @@ sub startup {
   unless ($plugins =~ m{\btranslate\b}) {
     $plugins = $plugins ? "translate,$plugins" : 'translate';
   }
+  # We really like to have a simple way to send error messages to the user
+  unless ($plugins =~ m{\bUserErrors\b}) {
+    $plugins = 'UserErrors,'.$plugins;
+  }
   # We always want to have the evlog system around!
   unless ($plugins =~ m{\blog\b}) {
     $plugins = 'log,'.$plugins; # by now it should have at least translate

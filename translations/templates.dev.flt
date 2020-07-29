@@ -6,7 +6,16 @@ fieldname-email-address = Email Address
 fieldname-password      = Password
 fieldname-confirm-password = Confirm Password
 
+login-email-placeholder-username  = Enter username or email address
+login-email-placeholder-password  = Enter your password
+login-email-placeholder-password2 = Type your password again for confirmation
+
 login-to-proceed        = Login to Proceed
+
+# login/login.html.ep
+
+login-form-no-account-yet = Don't have an account yet?
+login-form-sign-up        = Sign up now!
 
 # email/login/confirm_email.html.ep
 
@@ -24,13 +33,16 @@ confirm-email-confirm-button = Confirm email address
 
 # login/email/create_account.html.ep
 
-create-account--email-info = the email will be used to activate the account
+create-account--title       = Create an account
+create-account--email-info  = the email will be used to activate the account
     and send you any notifications you subscribe to.
+buttonlabel-create-account  = Create account
 
 # login/email/email_confirmed.html.ep
 
 email-confirmed-successfully = Your email was confirmed successfully.
 
 # login/backends/email.html.ep
-fieldname-username-or-email   = Username or Password
-buttonlabel-login             = Login
+fieldname-username-or-email       = Username or Email
+login-email-forgot-password       = I forgot my password
+buttonlabel-login                 = Login

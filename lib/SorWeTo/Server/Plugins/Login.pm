@@ -35,9 +35,18 @@ sub register {
   }
 
   my $r = $app->routes;
-  $r->route('/login/')->to(cb => sub { $self->_login_page( @_ ) });
+  $r->route('/login/' )->to(cb => sub { $self->_login_page( @_ ) });
+  $r->route('/logout/')->to(cb => sub { $self->_logout( @_ ) });
 
   return $self;
+}
+
+sub _logout {
+  my ($self, $c) = @_;
+
+  $c->session({ logged_out => 1 });
+
+  return $c->redirect_to( '/' );
 }
 
 sub _login_page {

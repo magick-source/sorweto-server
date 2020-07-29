@@ -19,6 +19,13 @@ sub username {
   return $self->_user->username;
 }
 
+sub display_name {
+  my ($self) = @_;
+
+  return unless $self->_user;
+  return $self->_user->display_name;
+}
+
 sub user_id {
   my ($self) = @_;
 
@@ -26,10 +33,11 @@ sub user_id {
   return $self->_user->id;
 }
 
-sub anonymous {
+sub is_anonymous {
   my ($self) = @_;
 
   return $self->_user ? 0 : 1;
 };
+*anonymous = *is_anonymous;
 
 1;

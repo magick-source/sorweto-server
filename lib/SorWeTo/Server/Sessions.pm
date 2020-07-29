@@ -74,6 +74,14 @@ sub store {
 
   my $stash = $c->stash;
   my $session = $stash->{_do_not_track_} ? {} : $c->session;
+
+  # when redirecting to another page we need to
+  # add the errors from the stash to the flash
+  # to make them available for later
+  if ( $c->res->is_redirect and $stash->{errors}) {
+    $session->{new_flash}->{errors} = $stash->{errors};
+  }
+
   return unless $stash->{'mojo.active_session'}
             or  keys %$session
             or  $stash->{'mojo.session_id'}
@@ -114,8 +122,12 @@ sub store {
   # session to keep extending as long as it is being used
   # unless $session->{expiration} is explicitly set to 0
   my $expires;
-  if ( $expiration ) {
+  if ( $session->{logged_out} ) {
+    $expires = time - 3600;
+
+  } elsif ( $expiration ) {
     $expires = time + $expiration;
+
   } elsif ( $default ) {
     $expires = $default;
   }

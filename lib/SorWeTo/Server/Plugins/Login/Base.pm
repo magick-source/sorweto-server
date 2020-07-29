@@ -64,6 +64,11 @@ sub get_login_option {
       identifier  => $identifier,
     });
 
+  eval {
+    $rec->{info} = from_json( $rec->info, {utf8=>1} );
+    1;
+  };
+
   return $rec;
 }
 
@@ -77,6 +82,11 @@ sub get_login_option_by_username {
       login_type  => $type,
       user_id     => $user->id,
     });
+  
+  eval {
+    $rec->{info} = from_json( $rec->info, {utf8=>1} );
+    1;
+  };
 
   return $rec;
 }
@@ -90,7 +100,7 @@ sub hash_password {
 sub is_password_correct {
   my ($self, $password, $hash) = @_;
 
-  return SorWeTo::Utils::Digests::check_salted_hash( $password );
+  return SorWeTo::Utils::Digests::check_salted_hash( $password, $hash );
 }
 
 sub _user_error {

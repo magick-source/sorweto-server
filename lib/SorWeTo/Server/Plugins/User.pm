@@ -2,7 +2,7 @@ package SorWeTo::Server::Plugins::User;
 
 use Mojo::Base qw(Mojolicious::Plugin);
 
-use SorWeTo::Db;
+use SorWeTo::Db::User;
 use SorWeTo::User;
 
 has __user  => undef;
@@ -62,9 +62,24 @@ sub add_user_helper {
 sub get_user {
   my ($self, $c) = @_;
 
-  # TODO: Get user_id from session, instanciate user and return
+  unless ($c->stash->{__userobj}) {
+    my $userobj;
 
-  return __anonymous();
+    my $user_id = $c->session->{user_id};
+    if ($user_id) {
+      my ($user) = SorWeTo::Db::User->retrieve( $user_id );
+
+      if ($user and $user->id) {
+         $userobj = SorWeTo::User->from_dbuser( $user );
+      }
+    }
+
+    $userobj ||= __anonymous();
+    
+    $c->stash->{__userobj} = $userobj;
+  }
+
+  return $c->stash->{__userobj};
 }
 
 sub user_by_username {

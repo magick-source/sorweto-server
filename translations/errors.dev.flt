@@ -1,5 +1,9 @@
 # Dev version of the translations of errors
 
+# General errors - expected everywhere
+
+error--under-construction = This functionality is still under construction
+
 # error/logged_not_track.html.ep
 
 error-logged-in-no-track = Logged in access don't work without the hability
@@ -18,5 +22,5 @@ login-with-email-title = Login with username or email
 
 error-login-username-or-password-missing = Both username and password
     are needed. Please type both.
-
+error-login-username-or-password-invalid = Incorrect Error or password
 

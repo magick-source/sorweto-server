@@ -54,23 +54,75 @@ sub _login_email {
   my @errors    = ();
 
   unless ($username and $passwd) {
-    push @errors, $self->_user_error(
+    $self->_login_error(
+        $c, 
         $c->__('error-login-username-or-password-missing')
       );
-
-    $c->flash({
-        email_login => {
-          username  => $username,
-          password  => $passwd,
-        },
-        errors    => \@errors,
-      });
-    return $c->redirect_to('/login/');
   }
 
-  
+  if ( check_email( $username ) ) {
+    return $self->__login_with_email( $c, $username, $passwd );
+  }
+#  } elsif ( $username =~ m{\A\w{3.18}\z} ) {
+#
+#  } else {
+#    push @errors, $self->_user_error(
+#        $c->__('error-login-invalid-username');
+#      );
+#  }
 
-  $c->render( text => 'Just some text to render');
+  $c->evinfo("Going to say this is under construction");
+  return $c->under_construction(
+      $c->__('error--under-construction'),
+      '/login/',
+    );
+}
+
+sub __login_with_email {
+  my ($self, $c, $email, $passwd ) = @_;
+
+  my $login_option = $self->get_login_option('email', $email);
+  unless ( $login_option ) {
+    return $self->_login_error( $c, 
+         $c->__('error-login-username-or-password-invalid'),
+      );
+  }
+
+  $login_option->info;
+  use Data::Dumper;
+  print STDERR Dumper( $login_option );
+
+  my $passwd_isok = $self->is_password_correct(
+        $passwd,
+        $login_option->{info}->{password}
+    );
+  unless ( $passwd_isok ) {
+    return $self->_login_error( $c, 
+         $c->__('error-login-username-or-password-invalid'),
+      );
+  }
+
+  $c->session->{user_id} = $login_option->user_id;
+  return $c->redirect_to('/');
+}
+
+sub _login_error {
+  my ($self, $c, $message) = @_;
+
+  my $username = $c->param('username');
+  my $passwd   = $c->param('password');
+  $c->add_user_error(
+      $message,
+      icon  => 'error',
+    );
+
+  $c->flash({
+      email_login => {
+        username  => $username,
+        password  => $passwd,
+      },
+    });
+  return $c->redirect_to('/login/');
 }
 
 sub _new_user {

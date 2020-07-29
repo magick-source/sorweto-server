@@ -6,6 +6,7 @@ use overload '""' => 'stringify';
 
 has error_type => 'error';
 has message    => undef;
+has icon       => undef;
 has debug      => undef;
 has stacktrace => undef;
 has dumped     => 0;
@@ -28,6 +29,7 @@ sub TO_JSON {
   return {
       error_type  => $self->error_type,
       message     => $self->message,
+      icon        => $self->icon,
     };
 }
 
