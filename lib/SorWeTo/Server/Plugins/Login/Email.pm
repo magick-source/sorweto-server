@@ -62,14 +62,15 @@ sub _login_email {
 
   if ( check_email( $username ) ) {
     return $self->__login_with_email( $c, $username, $passwd );
+
+  } elsif ( $username =~ m{\A\w{3,18}\z} ) {
+    return $self->__login_with_username( $c, $username, $passwd );
+
+  } else {
+    return $self->_login_error( $c,
+        $c->__('error-login-invalid-username'),
+      );
   }
-#  } elsif ( $username =~ m{\A\w{3.18}\z} ) {
-#
-#  } else {
-#    push @errors, $self->_user_error(
-#        $c->__('error-login-invalid-username');
-#      );
-#  }
 
   $c->evinfo("Going to say this is under construction");
   return $c->under_construction(
@@ -78,25 +79,41 @@ sub _login_email {
     );
 }
 
+sub __login_with_username {
+  my ($self, $c, $username, $passwd ) = @_;
+
+  my $login_option = $self->get_login_option_by_username( 'email', $username );
+
+  return $self->__check_password( $c, $login_option, $passwd );
+}
+
 sub __login_with_email {
   my ($self, $c, $email, $passwd ) = @_;
 
   my $login_option = $self->get_login_option('email', $email);
+
+  return $self->__check_password( $c, $login_option, $passwd );
+}
+
+sub __check_password {
+  my ($self, $c, $login_option, $passwd) = @_;
+
   unless ( $login_option ) {
+    $c->evinfo('no login_option found');
+
     return $self->_login_error( $c, 
          $c->__('error-login-username-or-password-invalid'),
       );
   }
 
   $login_option->info;
-  use Data::Dumper;
-  print STDERR Dumper( $login_option );
 
   my $passwd_isok = $self->is_password_correct(
         $passwd,
         $login_option->{info}->{password}
     );
   unless ( $passwd_isok ) {
+    $c->evinfo("there is an login_otion, but the password is wrong");
     return $self->_login_error( $c, 
          $c->__('error-login-username-or-password-invalid'),
       );
