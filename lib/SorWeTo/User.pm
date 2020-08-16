@@ -40,4 +40,9 @@ sub is_anonymous {
 };
 *anonymous = *is_anonymous;
 
+sub has_right {
+  #TODO: implement support for different permission backends
+  return 0;
+}
+
 1;
