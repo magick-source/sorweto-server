@@ -59,11 +59,6 @@ sub _login_page {
   }
   $c->stash->{login_data} = \%login_data;
 
-  my $ses_flash = $c->session->{flash};
-  my $flash = $c->flash('errors');
-  use Data::Dumper;
-  print STDERR "flash: ", Dumper($ses_flash, $flash),"\n";
-
   my @backends = keys %{ $self->_plugins };
   $c->stash->{backends} = \@backends;
   $c->render(template => 'login/login' );
