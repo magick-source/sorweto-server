@@ -120,7 +120,8 @@ sub __check_password {
   }
 
   $c->session->{user_id} = $login_option->user_id;
-  return $c->redirect_to('/');
+
+  return $self->login_successful;
 }
 
 sub _login_error {

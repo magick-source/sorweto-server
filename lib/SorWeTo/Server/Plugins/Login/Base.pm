@@ -13,6 +13,16 @@ use SorWeTo::Utils::Digests qw();
 
 use JSON qw(from_json to_json);
 
+sub login_successful {
+  my ($self, $c) = @_;
+
+  my $goto = '/';
+  $goto = delete $c->session->{goto_after_login};
+    if $c->session->{goto_after_login};
+
+  return $c->redirect_to( $goto );
+}
+
 sub create_user_if_available {
   my ($self, $username, $user_data) = @_;
 
