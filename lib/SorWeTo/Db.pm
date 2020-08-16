@@ -7,8 +7,13 @@ use Mojo::Base 'Class::DBI';
 sub init {
   my ($class, $dbinfo) = @_;
 
+  my $dsn = "dbi:mysql:$dbinfo->{dbname}";
+  if ($dbinfo->{hostname}) {
+    $dsn.=";host=$dbinfo->{hostname}";
+  }
+
   $class->connection(
-    "dbi:mysql:$dbinfo->{dbname}",
+    $dsn,
     $dbinfo->{dbuser},
     $dbinfo->{dbpass},
   );
