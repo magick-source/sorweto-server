@@ -17,7 +17,7 @@ sub login_successful {
   my ($self, $c) = @_;
 
   my $goto = '/';
-  $goto = delete $c->session->{goto_after_login};
+  $goto = delete $c->session->{goto_after_login}
     if $c->session->{goto_after_login};
 
   return $c->redirect_to( $goto );
