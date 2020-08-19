@@ -1,1 +1,8 @@
+.navbar-vertical.navbar-expand-lg {
+  position: relative;
+  min-height: 100%;
+}
 
+.swt-full-height {
+  min-height:100%;
+}

@@ -1,2 +1,12 @@
-the sidebar will be here!!
+% my $sideclass = stash('sidebar_left') ? 'navbar-left' : 'navbar-right';
 
+<aside class="navbar navbar-vertical <%= $sideclass %> navbar-expand-lg navbar-light">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-sidebar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar-sidebar">
+      the sidebar will be here!!
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,9 @@
+<footer class="footer footer-transparent border-top">
+  <div class="container">
+    <div class="row text-center align-items-center flex-row-reverse">
+      <div class="col">
+        <%= stash('footer-text') || "some footer - set stash('footer-text') " %>
+      </div>
+    </div>
+  </div>
+</footer>

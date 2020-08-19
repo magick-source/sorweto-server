@@ -12,46 +12,51 @@
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="HandheldFriendly" content="True"/>
     <meta name="MobileOptimized" content="320"/>
-
-    <link href="/vender/tabler/css/tabler.min.css" rel="stylesheet" type="text/css" />
+    <link href="/vendor/tabler/css/tabler.min.css" rel="stylesheet" type="text/css" />
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="/sorweto/css/main.css" rel="stylesheet" type="text/css">
-
     <title><%= $pagename %> - <%= $sitename %></title>
 
 <%= html_hook 'html_header' %>
 
   </head>
-  <body>  
-
+  <body class="antialiased">
+    <div class="page">
 %= include 'inc/header'
 
-<div class="container">
-  <div class="row">
-% if ($show_sidebar) {
-    <div class="col-2" id="sidebar">
+      <div class="content py-0">
+        <div class="container-xl">
+          <div class="row swt-full-height">
+% if (stash 'sidebar_left') { 
+            <div class="col-sm-3 navbar-light">
 %= include 'inc/sidebar'
-    </div>
-% } else {
-    <div class="col-1"></div>
-% }
- 
-    <div id="main-container">
-
-%= include 'inc/errors'
-
-      <%= content %>
-    </div>
-
-% unless ($show_sidebar) {
-    <div class="col-1"></div>
+            </div>
 % }
 
-  </div>
-</div> <!-- body > .container -->
+            <div class="col-sm-9">
+              <div class="content">
+%= content
+              </div>
+            </div>
 
+% if (!stash 'sidebar_left') { 
+            <div class="col-sm-3">
+%= include 'inc/sidebar'
+            </div>
+% }
+          </div>
+        </div>
+      </div>
+
+
+
+%= include 'inc/footer'
+    </div>
+
+    <script src="/vendor/jquery/jquery.slim.min.js"></script>
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/devdor/tabler/js/tabler.min.js"></script>
+    <script src="/vendor/tabler/js/tabler.min.js"></script>
+
 <%= html_hook 'html_body_end' %>
   </body>
 </html>

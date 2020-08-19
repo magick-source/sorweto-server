@@ -1,16 +1,16 @@
-<div class="container" id="main-header">
-  <div class="row">
-    <div class="col-4" id="header-logo">
+<header class="navbar navbar-expand-md navbar-light">
+  <div class="container-xl">
+    <a href="." class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pr-0 pr-md-3">
 % if ( stash 'logo' ) {
-      <div class="logo image">
-        <a href="<%= $sitebase %>"
-        <img src="<%= stash 'logo' %>" class="logo-img">
-      </div>
+      <img src="<%= stash 'logo' %>" alt="<%= $sitename %>" class="navbar-brand-image">
 % } else {
-      <div class="sitename title">
-        <h1><a href="<%= $sitebase %>"><%= $sitename %></a></h1>
-      </div>
+      <h2 class="navbar-brand"><%= $sitename %></h2>    
 % }
+    </a>
+    <div class="navbar-nav flex-row order-md-last">
+      maybe some menu here!
     </div>
   </div>
-</div>
+
+</header>
+
