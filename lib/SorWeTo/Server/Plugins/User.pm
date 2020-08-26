@@ -54,8 +54,6 @@ sub add_user_helper {
   return $self;
 }
 
-
-
 sub get_user {
   my ($self, $c) = @_;
 
@@ -86,6 +84,41 @@ sub user_by_username {
   print STDERR "called user_by_username '$username'\n";
 
   return;
+}
+
+sub user_has_right {
+  my ($self, $c, @params) = @_;
+
+  my ($user, $right);
+  if (scalar @params <= 1) {
+    ($right) = @params;
+
+  } elsif (!(scalar @param % 2)) {
+    my %params = @params;
+    $right = $params{ right };
+    $user  = $params{ user };
+
+    die "parameter \$right is missing"
+      unless defined $right;
+
+  } else {
+    die "Invalid set of params to user_has_right";
+  }
+
+  if ($user and $right eq '') { #test for trackable
+    die "only can test trackable for current user";
+  }
+
+  return _can_track_user( $c )
+    unless $right;
+
+  $user ||= $c->user;
+
+  my $plugins = $c->app->plugins;
+
+  my $has_right = $plugins->emit_chain('user_has_right', $c, $user, $right);
+
+  return $has_right;
 }
 
 sub _can_track_user {
