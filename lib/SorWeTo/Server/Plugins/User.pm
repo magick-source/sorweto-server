@@ -11,16 +11,13 @@ has helpers => sub { {} };
 sub register {
   my ($self, $app, $conf) = @_;
 
-  print STDERR "on SWT::Srv::Plg::User->register\n";
+  $app->helper( add_user_helper   => sub { $self->add_user_helper( @_ ) } );
 
-  $app->renderer->add_helper(
-      add_user_helper => sub { $self->add_user_helper( @_ ) }
-    );
+  $app->helper( user              => sub { $self->get_user( @_ ) });
+  $app->helper( user_by_username  => sub { $self->user_by_username( @_ ) } );
 
-  $app->renderer->add_helper( user => sub { $self->get_user( @_ ) });
-  $app->renderer->add_helper(
-      user_by_username => sub { $self->user_by_username( @_ ) }
-    );
+  $app->helper( user_has_right    => sub { $self->user_has_right( @_ ) } );  
+  $app->helper( can_track_user    => \&_can_track_user );
 
   my $r = $app->routes;
   $r->route('/user/do-not-track')->to(cb => \&_r_do_not_track );
@@ -89,6 +86,14 @@ sub user_by_username {
   print STDERR "called user_by_username '$username'\n";
 
   return;
+}
+
+sub _can_track_user {
+  my ($c) = @_;
+
+  return if $c->stash->{_do_not_track_};
+
+  return 1;
 }
 
 sub _r_do_not_track {
