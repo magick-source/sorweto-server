@@ -121,7 +121,7 @@ sub __check_password {
 
   $c->session->{user_id} = $login_option->user_id;
 
-  return $self->login_successful;
+  return $self->login_successful( $c );
 }
 
 sub _login_error {
