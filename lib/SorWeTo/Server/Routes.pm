@@ -56,11 +56,7 @@ sub __can_route_builder {
   my $route = $base->under('/' => sub {
       my ($c) = @_;
 
-      my $user = $c->user();
-      return undef
-        unless $user and $user->has_right( $right );
-
-      return 1;
+      return $c->user_has_right( $right );
     });
 
   return $route;
@@ -74,9 +70,8 @@ sub __admin_route_builder {
   $route = $route->under('/' => sub {
       my ($c) = @_;
 
-      my $user = $c->user();
       return __login_or_fail( $c )
-        unless $user and $user->has_right( $right );
+        unless $c->user_has_right( $right );
 
       return 1;
     });
