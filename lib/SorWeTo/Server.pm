@@ -3,6 +3,7 @@ package SorWeTo::Server;
 use Mojo::Base 'Mojolicious';
 
 use SorWeTo::Server::Sessions;
+use SorWeTo::Server::Routes;
 
 has config => undef;
 
@@ -34,6 +35,7 @@ sub startup {
     $session_params{backend} = $class->new();
   }
   $self->sessions( SorWeTo::Server::Sessions->new( %session_params ) );
+  $self->routes( SorWeTo::Server::Routes->new() );
 
   my $defaults = $self->defaults;
   $defaults->{sitename}         = $self->config->config('_','sitename')
