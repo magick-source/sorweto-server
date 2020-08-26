@@ -120,7 +120,7 @@ sub __login_or_fail {
 sub __api_builder {
   my ($self) = @_;
 
-  return $self->under('/api/' => sub  {
+  return $self->under('/api/' => [ format => 'json' ] => sub  {
       #TODO: Support for auth
       return 1;
     });
