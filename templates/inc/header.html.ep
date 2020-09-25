@@ -7,9 +7,9 @@
       <h2 class="navbar-brand"><%= $sitename %></h2>    
 % }
     </a>
-    <div class="navbar-nav flex-row order-md-last">
-      maybe some menu here!
-    </div>
+
+%= include_maybe 'inc/topbar_menu'
+
   </div>
 
 </header>
