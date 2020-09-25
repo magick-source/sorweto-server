@@ -17,10 +17,10 @@ sub register {
 
   $app->renderer->add_helper( __  => sub { $self->translate( @_ ) });
   $app->helper( register_translations => sub {
-      $self->register_translations( $app, @_ );
+      $self->register_translations( @_ );
     });
 
-  $self->register_translations( $app );
+  $self->register_translations( );
 
   return $self;
 }
@@ -61,7 +61,7 @@ sub slurp {
 }
 
 sub register_translations {
-  my ($self, $app, $path, $context) = @_;
+  my ($self, $c_maybe, $path, $context) = @_;
 
   $path ||= 'translations';
 
