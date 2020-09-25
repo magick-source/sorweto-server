@@ -1,12 +1,8 @@
 % layout 'basic';
 
-<div class="card card-md">
-  <div class="card-body">
 % for my $backend (@$backends) {
 %=    include_maybe "login/backends/$backend";
 % }
-  </div>
-</div>
 
 <div class="text-center text-muted">
   <%= __('login-form-no-account-yet') %>

@@ -1,3 +1,7 @@
+
+<div class="card card-md">
+  <div class="card-body">
+
 <div class="login_email login_backend">
   <h2 class="mb-5 text-center"> <%= __('login-with-email-title') %> </h2>
   <form action="<%= url_for('/login/email') %>" method="post">
@@ -32,4 +36,7 @@
       </button>
     </div>
   </form>
+</div>
+
+  </div>
 </div>
