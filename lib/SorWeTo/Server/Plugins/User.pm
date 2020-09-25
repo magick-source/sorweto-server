@@ -93,7 +93,7 @@ sub user_has_right {
   if (scalar @params <= 1) {
     ($right) = @params;
 
-  } elsif (!(scalar @param % 2)) {
+  } elsif (!(scalar @params % 2)) {
     my %params = @params;
     $right = $params{ right };
     $user  = $params{ user };
@@ -116,6 +116,7 @@ sub user_has_right {
 
   my $plugins = $c->app->plugins;
 
+  # HOOK: user_has_right => $next => $user => $right
   my $has_right = $plugins->emit_chain('user_has_right', $c, $user, $right);
 
   return $has_right;
