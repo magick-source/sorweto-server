@@ -22,7 +22,8 @@ sub _html_hook_handler {
     my @prms = @params;
     my $res = $cb->( $c, @prms );
     if (defined $res and $res ne '') {
-      $result .= $res . "\n";
+      $result .= $res;
+      $result .= "\n" unless $result =~ m{\n\z}sm;
     }
   }
 
