@@ -1,0 +1,13 @@
+%# Add login form is user is not loggedin
+% my $user = user();
+% if (!$user or $user->is_anonymous) {
+%= include 'inc/forms/login-fields', formdata => {}
+      <div class="mb-3 clearfix">
+        <span class="form-label-description">
+          <a href="<%= url_for('/login') %>">
+            <%= __('link-text--login-with-other') %>
+          </a>
+        </span>
+      </div>
+% }
+
