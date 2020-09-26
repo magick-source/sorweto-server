@@ -20,7 +20,7 @@ my %levels = (
 );
 
 sub info_level { 5 }
-sub notice_level { 9 }
+sub notice_level { 6 }
 
 sub register {
   my ($self, $app, $conf) = @_;
@@ -33,8 +33,7 @@ sub register {
   $app->helper( tweet     => sub { $self->_tweet( @_ ); } );
   $app->helper( growl     => sub { $self->_growl( @_ ); } );
 
-  $self->level( $conf->{log_level} || 5 );
-  $self->level( $conf->{evlog_level} || 5 );
+  $self->level( $conf->{evlog_level} || $conf->{log_level} || 5 );
 
   $app->hook( before_dispatch => sub { $self->_start_event( @_ ) } );
   $app->hook( after_dispatch  => sub { $self->_send_event( @_ ) } );
