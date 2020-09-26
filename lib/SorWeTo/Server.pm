@@ -80,7 +80,7 @@ sub startup {
   unless ($plugins =~ m{\blog\b}) {
     $plugins = 'log,'.$plugins; # by now it should have at least translate
   }
-  my @plugged = ();
+  my @pluged = ();
   if ($plugins) {
     my @plugins = split /\s*[,;]\s*/, $plugins;
     my %registered = ();
@@ -95,21 +95,41 @@ sub startup {
       
       if ($pluged and $pluged->can('dependencies')) {
         my @depends = $pluged->dependencies();
-        print STDERR "dependencies for $plugin: @depends\n";
         if (@depends) {
           push @plugins, grep { !$registered{ $_ } } @depends;
         }
       }
-      push @plugged, $pluged;
+      push @pluged, $pluged;
 
       $registered{ $plugin } = 1;
     }
   }
 
-	for my $pluged ( @plugged ) {
+  my %plugin_bases = ();
+  my @plugin_dirs = ();
+  for my $pluged ( @pluged ) {
+    my $cls = ref $pluged;
+    $cls =~ s{::}{/}g;
+    $cls.='.pm';
+    
+    my $basepath = $INC{ $cls };
+    if ( $basepath =~ m{/lib/} ) {
+      $basepath =~ s{/lib/.*}{};
+      push @plugin_dirs, $basepath
+        unless $plugin_bases{ $basepath }++;
+    } # no lib dir, not guesses on structure
+
 		next unless $pluged and $pluged->can('post_register');
 		$pluged->post_register( $self );
 	}
+
+  # register public directories in the order or plugin loading;
+  for my $dir (@plugin_dirs) {
+    if ( -d "$dir/public" ) {
+      push @{ $self->static->paths }, "$dir/public";
+    }
+  }
+
 }
 
 sub html_hook {
