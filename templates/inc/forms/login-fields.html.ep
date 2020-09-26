@@ -1,0 +1,25 @@
+
+<div class="mb-3">
+  <label class="form-label"><%= __('fieldname-username-or-email') %></label>
+  <input name="username" value="<%= $formdata->{username} %>"
+    placeholder="<%= __('login-email-placeholder-username') %>"
+    class="form-control"  autocomplete="off" />
+</div>
+<div class="mb-2">
+  <label class="form-label">
+    <%= __('fieldname-password') %>
+    <span class="form-label-description">
+      <a href="<%= url_for('/login/email/forgot-password' ) %>">
+        <%= __('login-email-forgot-password') %>
+      </a>
+    </span>
+  </label>
+
+  <div class="input-group input-group-flat">
+    <input type="password" name="password"
+      value="<%= $formdata->{password} %>"
+      class="form-control"
+      placeholder="<%= __('login-email-placeholder-password') %>" />
+    
+  </div>
+</div>
