@@ -1,23 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="<%= $page_description %>">
-    <meta name="author" content="<%= $author %>">
-    <meta name="msapplication-TileColor" content="#206bc4"/>
-    <meta name="theme-color" content="#206bc4"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="mobile-web-app-capable" content="yes"/>
-    <meta name="HandheldFriendly" content="True"/>
-    <meta name="MobileOptimized" content="320"/>
-    <link href="/vendor/tabler/css/tabler.min.css" rel="stylesheet" type="text/css" />
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="/sorweto/css/main.css" rel="stylesheet" type="text/css">
-    <title><%= $pagename %> - <%= $sitename %></title>
 
-<%= html_hook 'html_header' %>
+%= include 'inc/shared/html-head'
 
   </head>
   <body class="antialiased">
@@ -37,10 +22,7 @@
 %= include 'inc/footer'
     </div>
 
-    <script src="/vendor/jquery/jquery.slim.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/tabler/js/tabler.min.js"></script>
+%= include 'inc/shared/body-end'
 
-<%= html_hook 'html_body_end' %>
   </body>
 </html>
