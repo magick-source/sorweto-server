@@ -4,6 +4,7 @@ use Mojo::Base 'Mojolicious';
 
 use SorWeTo::Server::Sessions;
 use SorWeTo::Server::Routes;
+use SorWeTo::Server::htmlHooks;
 
 has config => undef;
 
@@ -12,6 +13,10 @@ has last_hostname => undef;
 has evlog => undef;
 
 has translations => undef;
+
+has html_hooks  => sub {
+    SorWeTo::Server::htmlHooks->new( app => @_ );
+  };
 
 sub startup {
   my $self = shift;
@@ -37,13 +42,15 @@ sub startup {
   $self->sessions( SorWeTo::Server::Sessions->new( %session_params ) );
   $self->routes( SorWeTo::Server::Routes->new() );
 
+  $self->html_hooks->init();
+
   my $defaults = $self->defaults;
   $defaults->{sitename}         = $self->config->config('_','sitename')
                                || 'Some SorWeTo Site';
   $defaults->{sitebase}         = $self->config->config('_','sitebase')
                                || '/';
 
-  $defaults->{pagename}         = 'just some page';
+  $defaults->{pagename}         = '';
   $defaults->{page_description} = '';
   $defaults->{author}           = '';
   $defaults->{show_sidebar}     = 1;
@@ -58,8 +65,6 @@ sub startup {
 
   }
   push @{ $self->commands->namespaces }, 'SorWeTo::Server::Command';
-
-  $self->renderer->add_helper('html_hook', \&_html_hook_handler );
 
   my $plugins = $self->config->config('server', 'plugins') // '';
 
@@ -107,10 +112,10 @@ sub startup {
 	}
 }
 
-sub _html_hook_handler {
-  my ($c, $hook_name, @params) = @_;
+sub html_hook {
+  my ($self, $hook, $handler) = @_;
 
-  return '';
+  return $self->html_hooks->on( $hook, $handler );
 }
 
 1;
