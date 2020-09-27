@@ -6,6 +6,8 @@ use SorWeTo::Server::Sessions;
 use SorWeTo::Server::Routes;
 use SorWeTo::Server::htmlHooks;
 
+use Mojo::JSON qw(to_json);
+
 has config => undef;
 
 has last_hostname => undef;
@@ -130,12 +132,27 @@ sub startup {
     }
   }
 
+  $self->html_hook( 'html_head', sub { $self->_sitevars( @_ ) });
+
 }
 
 sub html_hook {
   my ($self, $hook, $handler) = @_;
 
   return $self->html_hooks->on( $hook, $handler );
+}
+
+sub _sitevars {
+  my ($self, $c) = @_;
+
+  my %sitevars = (
+    %{ $c->stash->{sitevars} || {} },
+    apibase => $c->url_for('api')->to_abs->to_string,
+    base    => $c->url_for('/')->to_abs->to_string,
+  );
+  my $sitevars_js = to_json( \%sitevars );
+
+  return "<script>var sitevars = $sitevars_js; </script>";
 }
 
 1;
