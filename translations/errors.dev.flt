@@ -24,3 +24,6 @@ error-login-username-or-password-missing = Both username and password
     are needed. Please type both.
 error-login-username-or-password-invalid = Incorrect Error or password
 
+
+# templates/not_found.json.ep
+json-error--endpoint-not-found = The requested api does not exist!

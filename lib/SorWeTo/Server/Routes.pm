@@ -29,9 +29,7 @@ sub admin_can {
 sub api_can {
   my ($self, $right) = @_;
 
-  return $self->api
-    unless $right;
-
+  $right = '' unless defined $right;
   my $route = $self->__apican->{ $right } 
           ||= $self->__can_route_builder( $self->api, $right );
 
@@ -56,7 +54,12 @@ sub __can_route_builder {
   my $route = $base->under('/' => sub {
       my ($c) = @_;
 
-      return $c->user_has_right( $right );
+      print STDERR "XXX: got to route_builded[$right]\n";
+  
+      return 1 if $c->user_has_right( $right );
+
+      $c->reply->not_found();
+      return undef;
     });
 
   return $route;
@@ -115,8 +118,14 @@ sub __login_or_fail {
 sub __api_builder {
   my ($self) = @_;
 
-  return $self->under('/api/' => [ format => 'json' ] => sub  {
+  return $self->under('/api/' => sub  {
+      my ($c) = @_;
+
+      $c->stash->{format} ||= 'json';
+      
       #TODO: Support for auth
+      print STDERR "XXX: under the /api/ handler\n";
+  
       return 1;
     });
 }

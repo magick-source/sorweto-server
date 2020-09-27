@@ -1,0 +1,6 @@
+{
+  "error": {
+    "type":     "fatal",
+    "message":  "<%= __('json-error--endpoint-not-found') %>"
+  }
+}
