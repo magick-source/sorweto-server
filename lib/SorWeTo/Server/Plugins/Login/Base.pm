@@ -16,6 +16,11 @@ use JSON qw(from_json to_json);
 sub login_successful {
   my ($self, $c) = @_;
 
+  # Maybe in the future we will support hooks on login!
+  # so we want to call this even for api logins, but we don't want
+  # to redirect api calls
+  return if $c->stash->{'swt.is_api'};
+
   my $goto = '/';
   $goto = delete $c->session->{goto_after_login}
     if $c->session->{goto_after_login};

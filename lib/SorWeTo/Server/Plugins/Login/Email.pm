@@ -28,6 +28,8 @@ sub register {
       $self->_confirm_email( @_ );
     });
 
+  $login->app->helper( inline_login => sub { $self->_inline_login( @_ ) });
+
   return $self;
 }
 
@@ -51,14 +53,41 @@ sub _login_email {
 
   my $username  = $c->param('username');
   my $passwd    = $c->param('password');
-  my @errors    = ();
 
   unless ($username and $passwd) {
-    $self->_login_error(
+    return $self->_login_error(
         $c, 
         $c->__('error-login-username-or-password-missing')
       );
   }
+
+  $self->__inline_login( $c, $username, $passwd );
+
+  if ($c->stash->{'login.errors'}) {
+    return $self->_finish_with_error( $c, $username, $passwd );
+  }
+
+  return $self->login_successful( $c );
+
+}
+
+sub _inline_login {
+  my ($self, $c) = @_;
+  
+  my $username  = $c->param('username');
+  my $passwd    = $c->param('password');
+
+  return unless $username and $passwd;
+  
+  $self->__inline_login( $c, $username, $passwd );
+
+  $self->login_successful( $c );
+
+  return;
+}
+
+sub __inline_login {
+  my ($self, $c, $username, $passwd) = @_;
 
   if ( check_email( $username ) ) {
     return $self->__login_with_email( $c, $username, $passwd );
@@ -72,11 +101,6 @@ sub _login_email {
       );
   }
 
-  $c->evinfo("Going to say this is under construction");
-  return $c->under_construction(
-      $c->__('error--under-construction'),
-      '/login/',
-    );
 }
 
 sub __login_with_username {
@@ -120,19 +144,23 @@ sub __check_password {
   }
 
   $c->session->{user_id} = $login_option->user_id;
-
-  return $self->login_successful( $c );
 }
 
 sub _login_error {
   my ($self, $c, $message) = @_;
 
-  my $username = $c->param('username');
-  my $passwd   = $c->param('password');
   $c->add_user_error(
       $message,
       icon  => 'error',
     );
+
+  $c->stash->{'login.errors'}++;
+
+  return;
+}
+
+sub _finish_with_error {
+  my ($self, $c, $username, $passwd) = @_;
 
   $c->flash({
       email_login => {
@@ -140,6 +168,7 @@ sub _login_error {
         password  => $passwd,
       },
     });
+
   return $c->redirect_to('/login/');
 }
 

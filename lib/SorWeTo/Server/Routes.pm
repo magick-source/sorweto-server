@@ -56,6 +56,10 @@ sub __can_route_builder {
 
       print STDERR "XXX: got to route_builded[$right]\n";
   
+      unless (my $user = $c->user() ) {
+        $c->inline_login(); 
+      }
+
       return 1 if $c->user_has_right( $right );
 
       $c->reply->not_found();
@@ -122,6 +126,7 @@ sub __api_builder {
       my ($c) = @_;
 
       $c->stash->{format} ||= 'json';
+      $c->stash->{'swt.is_api'} = 1;
       
       #TODO: Support for auth
       print STDERR "XXX: under the /api/ handler\n";
