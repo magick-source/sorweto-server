@@ -55,8 +55,9 @@ sub __can_route_builder {
       my ($c) = @_;
 
       print STDERR "XXX: got to route_builded[$right]\n";
-  
-      unless (my $user = $c->user() ) {
+ 
+      my $user = $c->user();
+      if ($user->is_anonymous() ) {
         $c->inline_login(); 
       }
 
