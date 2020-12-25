@@ -40,7 +40,7 @@ sub register {
 
 ### TODO: Add support for real eventlog systems
 
-  return;
+  return $self;
 }
 
 sub ev_log {
