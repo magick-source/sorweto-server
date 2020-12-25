@@ -94,6 +94,10 @@ sub startup {
       my $pluged = $self->plugins->register_plugin(
                         $plugin, $self, $config
                     );
+
+      unless ($pluged) {
+        print STDERR "!!! plugin '$plugin' returned undef\n";
+      }
       
       if ($pluged and $pluged->can('dependencies')) {
         my @depends = $pluged->dependencies();
@@ -101,7 +105,7 @@ sub startup {
           push @plugins, grep { !$registered{ $_ } } @depends;
         }
       }
-      push @pluged, $pluged;
+      push @pluged, $pluged if $pluged;
 
       $registered{ $plugin } = 1;
     }
@@ -133,6 +137,7 @@ sub startup {
   }
 
   $self->html_hook( 'html_head', sub { $self->_sitevars( @_ ) });
+  $self->helper( api_fail => \&_api_fail );
 
 }
 
@@ -153,6 +158,16 @@ sub _sitevars {
   my $sitevars_js = to_json( \%sitevars );
 
   return "<script>var sitevars = $sitevars_js; </script>";
+}
+
+sub _api_fail {
+  my ($c, $error, $data) = @_;
+    $error  ||= 500;
+    $data   ||= {};
+    $data->{error} = 1
+      unless exists $data->{error};
+
+  return $c->render( json => $data, status => $error );
 }
 
 1;
