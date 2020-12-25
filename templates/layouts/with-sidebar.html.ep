@@ -12,7 +12,7 @@
       <div class="content py-0">
         <div class="container-xl">
           <div class="row swt-full-height">
-% if (stash 'sidebar_left') { 
+% if (stash 'sidebar_left') {
             <div class="col-sm-3 navbar-light">
 %= include 'inc/sidebar'
             </div>
@@ -25,7 +25,7 @@
             </div>
 
 % if (!stash 'sidebar_left') { 
-            <div class="col-sm-3">
+            <div class="col-sm-3 navbar-light">
 %= include 'inc/sidebar'
             </div>
 % }
