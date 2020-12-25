@@ -134,11 +134,12 @@ sub store {
 
 
   my $options = {
-    domain  => $self->cookie_domain,
-    expires => $expires,
-    httponly => 1,
-    path     => $self->cookie_path,
-    secure   => $self->secure,
+    domain    => $self->cookie_domain,
+    expires   => $expires,
+    httponly  => 1,
+    path      => $self->cookie_path,
+    secure    => $self->secure,
+    samesite  => 'Lax',
   };
   $c->signed_cookie($self->cookie_name, $sess_id, $options);
 
