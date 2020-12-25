@@ -15,7 +15,9 @@ sub register {
 
   $app->translations( $self );
 
-  $app->renderer->add_helper( __  => sub { $self->translate( @_ ) });
+  $app->renderer->add_helper( __         => sub { $self->translate( @_ ) });
+  $app->renderer->add_helper( translate  => sub { $self->translate( @_ ) });
+
   $app->helper( register_translations => sub {
       $self->register_translations( @_ );
     });
