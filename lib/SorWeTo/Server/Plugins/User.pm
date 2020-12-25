@@ -57,10 +57,11 @@ sub add_user_helper {
 sub get_user {
   my ($self, $c) = @_;
 
-  unless ($c->stash->{__userobj}) {
+  my $user_id = $c->session->{user_id} || 0;
+
+  unless ($c->stash->{__userobj}{ $user_id } ) {
     my $userobj;
 
-    my $user_id = $c->session->{user_id};
     if ($user_id) {
       my ($user) = SorWeTo::Db::User->retrieve( $user_id );
 
@@ -71,10 +72,10 @@ sub get_user {
 
     $userobj ||= __anonymous();
     
-    $c->stash->{__userobj} = $userobj;
+    $c->stash->{__userobj}{ $user_id } = $userobj;
   }
 
-  return $c->stash->{__userobj};
+  return $c->stash->{__userobj}{ $user_id };
 }
 
 sub user_by_username {
