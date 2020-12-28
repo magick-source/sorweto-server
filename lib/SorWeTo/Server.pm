@@ -129,7 +129,7 @@ sub startup {
 		$pluged->post_register( $self );
 	}
 
-  # register public directories in the order or plugin loading;
+  # register public directories in the order of plugin loading;
   for my $dir (@plugin_dirs) {
     if ( -d "$dir/public" ) {
       push @{ $self->static->paths }, "$dir/public";
