@@ -3,3 +3,7 @@
 # lib/SorWeTo/Server/Plugins/Login/Email.pm
 confirm-email-subject = { $sitename } - Confirm your email address
 
+
+# lib/SorWeTo/Server/Plugins/MoreHelpers.pm
+# input validation errors
+validation_error_base = Invalid value on field '{$field_name}'
