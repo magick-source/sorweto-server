@@ -22,9 +22,9 @@ sub register {
 
   my $r = $login->app->routes;
 
-  $r->route('/login/email')->to(cb => sub { $self->_login_email( @_ ) } );
-  $r->route('/create_account/email')->to(cb => sub { $self->_new_user( @_ );});
-  $r->route('/login/confirm_email/:token')->to(cb => sub {
+  $r->any('/login/email')->to(cb => sub { $self->_login_email( @_ ) } );
+  $r->any('/create_account/email')->to(cb => sub { $self->_new_user( @_ );});
+  $r->any('/login/confirm_email/:token')->to(cb => sub {
       $self->_confirm_email( @_ );
     });
 

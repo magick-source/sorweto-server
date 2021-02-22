@@ -35,8 +35,8 @@ sub register {
   }
 
   my $r = $app->routes;
-  $r->route('/login/' )->to(cb => sub { $self->_login_page( @_ ) });
-  $r->route('/logout/')->to(cb => sub { $self->_logout( @_ ) });
+  $r->any('/login/' )->to(cb => sub { $self->_login_page( @_ ) });
+  $r->any('/logout/')->to(cb => sub { $self->_logout( @_ ) });
 
   return $self;
 }

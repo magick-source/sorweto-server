@@ -20,8 +20,8 @@ sub register {
   $app->helper( can_track_user    => \&_can_track_user );
 
   my $r = $app->routes;
-  $r->route('/user/do-not-track')->to(cb => \&_r_do_not_track );
-  $r->route('/user/track-again')->to(cb => \&_r_track_again );
+  $r->get('/user/do-not-track')->to(cb => \&_r_do_not_track );
+  $r->get('/user/track-again')->to(cb => \&_r_track_again );
   
   return $self;
 }
