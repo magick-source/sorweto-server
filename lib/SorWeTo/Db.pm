@@ -25,4 +25,22 @@ sub init {
   }
 }
 
+sub flagged {
+  my ($obj, @flags) = @_;
+
+  return unless $obj->can('flags');
+
+  my $flags = $obj->flags;
+  return unless $flags;
+
+  my %flags = map { $_ => 1 } split /,/, $flags;
+
+  my @flagged = ();
+  for my $flag (@flags) {
+    push @flagged, $flag
+      if $flags{ $flag };
+  }
+  return @flagged;
+}
+
 1;
