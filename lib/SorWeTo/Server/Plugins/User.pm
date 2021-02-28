@@ -7,9 +7,12 @@ use SorWeTo::User;
 
 has __user  => undef;
 has helpers => sub { {} };
+has app     => undef;
 
 sub register {
   my ($self, $app, $conf) = @_;
+
+  $self->app( $app );
 
   $app->helper( add_user_helper   => sub { $self->add_user_helper( @_ ) } );
 
@@ -18,6 +21,8 @@ sub register {
 
   $app->helper( user_has_right    => sub { $self->user_has_right( @_ ) } );  
   $app->helper( can_track_user    => \&_can_track_user );
+
+  $app->add_user_helper('has_right' => sub { $self->_user_has_right( @_ ) } );
 
   my $r = $app->routes;
   $r->get('/user/do-not-track')->to(cb => \&_r_do_not_track );
@@ -115,10 +120,16 @@ sub user_has_right {
 
   $user ||= $c->user;
 
-  my $plugins = $c->app->plugins;
+  return $self->_user_has_right( $user, $right );
+}
+
+sub _user_has_right {
+  my ($self, $user, $right) = @_;
+
+  my $plugins = $self->app->plugins;
 
   # HOOK: user_has_right => $next => $user => $right
-  my $has_right = $plugins->emit_chain('user_has_right', $c, $user, $right);
+  my $has_right = $plugins->emit_chain('user_has_right', $user, $right);
 
   return $has_right;
 }
