@@ -1,6 +1,6 @@
 <header class="navbar navbar-expand-md navbar-light">
   <div class="container-xl">
-    <a href="." class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pr-0 pr-md-3">
+    <a href="<%= url_for('/') %>" class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pr-0 pr-md-3">
 % if ( stash 'logo' ) {
       <img src="<%= stash 'logo' %>" alt="<%= $sitename %>" class="navbar-brand-image">
 % } else {
