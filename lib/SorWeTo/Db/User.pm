@@ -2,6 +2,8 @@ package SorWeTo::Db::User;
 
 use parent 'SorWeTo::Db';
 
+use SorWeTo::User;
+
 __PACKAGE__->table('swt_user');
 
 __PACKAGE__->columns( Primary => qw(id) );
@@ -13,6 +15,18 @@ __PACKAGE__->columns( All => qw(
     sql_last_updated
     flags
   ));
+
+sub from_id {
+  my ($class, $id) = @_;
+
+  my $user = $class->retrieve( $id );
+
+  if ($user) {
+    return SorWeTo::User->from_dbuser( $user );
+  }
+
+  return;
+}
 
 =for MySQL
 
