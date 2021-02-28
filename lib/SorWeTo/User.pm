@@ -23,7 +23,7 @@ sub display_name {
   my ($self) = @_;
 
   return unless $self->_user;
-  return $self->_user->display_name;
+  return $self->_user->display_name || $self->_user->username;
 }
 
 sub user_id {
