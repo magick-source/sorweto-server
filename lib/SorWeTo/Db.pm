@@ -1,6 +1,7 @@
 package SorWeTo::Db;
 
 use Mojo::Base 'Class::DBI';
+use Class::DBI::AbstractSearch;
 
 # TODO: create an insert_or_update method that will use UDKU
 
