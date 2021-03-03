@@ -45,4 +45,20 @@ sub flagged {
   return @flagged;
 }
 
+sub do_transaction {
+  my ($class, $code) = @_;
+
+  local $class->db_Main->{ AutoCommit };
+
+  eval {
+    $code->( );
+    $class->dbi_commit;
+    1;
+  } or do {
+    my $commit_error = $@ || 'invisierror?';
+    eval { $class->dbi_rollback };
+    die $commit_error;
+  };
+}
+
 1;
