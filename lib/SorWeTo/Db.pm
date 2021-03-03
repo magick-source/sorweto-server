@@ -17,6 +17,7 @@ sub init {
     $dsn,
     $dbinfo->{dbuser},
     $dbinfo->{dbpass},
+    { mysql_enable_utf8 => 1 },
   );
 
   if ( $dbinfo->{trace} ) {
