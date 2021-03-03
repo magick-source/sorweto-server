@@ -16,16 +16,15 @@ __PACKAGE__->columns( All => qw(
     flags
   ));
 
-sub from_id {
-  my ($class, $id) = @_;
+sub search_where {
+  my ($class, @filters) = @_;
 
-  my $user = $class->retrieve( $id );
+  my (@users) = $class->SUPER::search_where( @filters );
+  return unless @users;
 
-  if ($user) {
-    return SorWeTo::User->from_dbuser( $user );
-  }
+  @users = map { SorWeTo::User->from_dbuser( $_ ) } @users;
 
-  return;
+  return wantarray ? @users : \@users;
 }
 
 =for MySQL
