@@ -49,7 +49,12 @@ sub send_email {
   }
 
 
-  my $smtp = Net::SMTP->new( $config->{smtp_server}, Debug => 1 );
+  my %params = (
+      Debug => $config->{debug},
+      SSL   => $config->{SSL} // 1,
+    );
+
+  my $smtp = Net::SMTP->new( $config->{smtp_server}, %params );
   unless ($smtp) {
     warn "Send Email Fail: Failed to connect to $config->{smtp_server}";
     return;
