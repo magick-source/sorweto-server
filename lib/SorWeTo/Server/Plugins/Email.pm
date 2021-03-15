@@ -54,6 +54,9 @@ sub send_email {
       SSL   => $config->{SSL} // 1,
     );
 
+use Data::Dumper;
+print STDERR "smtp config: ", Dumper( $config );
+
   my $smtp = Net::SMTP->new( $config->{smtp_server}, %params );
   unless ($smtp) {
     warn "Send Email Fail: Failed to connect to $config->{smtp_server}";
