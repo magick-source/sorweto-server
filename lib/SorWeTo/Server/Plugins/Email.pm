@@ -55,8 +55,7 @@ sub send_email {
       Hello => $config->{hello} || $hostname,
     );
 
-use Data::Dumper;
-print STDERR "smtp config: ", Dumper( $config );
+  $params{Port} = $config->{port} if $config->{port};
 
   my $smtp = Net::SMTP->new( $config->{smtp_server}, %params );
   unless ($smtp) {
