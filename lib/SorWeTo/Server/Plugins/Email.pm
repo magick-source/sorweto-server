@@ -36,7 +36,7 @@ sub send_email {
   my $hostname = $c->req->url->base->host;
 
   my $config = $c->config("send_email:$hostname");
-  unless ($config) {
+  unless ($config and keys %$config) {
     $config = $c->config("send_email");
   }
 
