@@ -52,6 +52,7 @@ sub send_email {
   my %params = (
       Debug => $config->{debug},
       SSL   => $config->{SSL} // 1,
+      Hello => $config->{hello} || $hostname,
     );
 
 use Data::Dumper;
