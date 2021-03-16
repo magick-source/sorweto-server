@@ -27,40 +27,38 @@ sub register {
 	return $self;
 }
 
-#sub template_path {
-#	my ($self, $options) = @_;
+sub template_path {
+	my ($self, $options) = @_;
 
-#	my $tmpl;
-#	my $theme 	 = $options->{theme}
-#				|| $self->theme;
-#	if (!$theme and $options->{hostname}) {
-#		$theme = $self->theme_by_host->{ $options->{hostname} }
-#				|| $self->theme_by_host->{ default };
-#	}
-#	if ($theme and $options->{template}) {
-#		my $oldtmpl = $options->{template};
-#
-#		$options->{template} = "themes/$theme/$oldtmpl";
-#		$tmpl = $self->SUPER::template_path( $options );
-#
-#		$options->{template} = $oldtmpl;
-#		unless ($tmpl) {
-#			if ($self->themes->{$theme}->{parent}) {
-#				return $self->template_path({
-#					%$options,
-#					theme => $self->themes->{$theme}->{parent},
-#				});
-#			}
-#		}
-#	}
-#
-#	$tmpl = $self->SUPER::template_path( $options )
-#		unless $tmpl and -r $tmpl;
-#  
-#  print STDERR "tmpl: $options->{template} => $tmpl\n";
-#
-#	return $tmpl;
-#}
+	my $tmpl;
+	my $theme 	 = $options->{theme}
+				|| $self->theme;
+	if (!$theme and $options->{hostname}) {
+		$theme = $self->theme_by_host->{ $options->{hostname} }
+				|| $self->theme_by_host->{ default };
+	}
+	if ($theme and $options->{template}) {
+		my $oldtmpl = $options->{template};
+
+		$options->{template} = "themes/$theme/$oldtmpl";
+		$tmpl = $self->SUPER::template_path( $options );
+
+		$options->{template} = $oldtmpl;
+		unless ($tmpl) {
+			if ($self->themes->{$theme}->{parent}) {
+				return $self->template_path({
+					%$options,
+					theme => $self->themes->{$theme}->{parent},
+				});
+			}
+		}
+	}
+
+	$tmpl = $self->SUPER::template_path( $options )
+		unless $tmpl and -r $tmpl;
+  
+	return $tmpl;
+}
 
 sub register_themes {
 	my ($self, $app, $c, @themes) = @_;
