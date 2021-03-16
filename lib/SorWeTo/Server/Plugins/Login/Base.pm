@@ -77,6 +77,7 @@ sub get_login_option {
   my ($rec) = SorWeTo::Db::UserLogin->search({
       login_type  => $type,
       identifier  => $identifier,
+      flags       => 'active',
     });
 
   eval {
@@ -96,6 +97,7 @@ sub get_login_option_by_username {
   my ($rec) = SorWeTo::Db::UserLogin->search({
       login_type  => $type,
       user_id     => $user->id,
+      flags       => 'active',
     });
   
   eval {
