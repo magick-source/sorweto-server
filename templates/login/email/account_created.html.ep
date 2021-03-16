@@ -1,7 +1,15 @@
-% layout 'default';
+% layout 'basic';
+
+<div class="card card-md">
+  <div class="card-body">
 
 <p>Your account was successfully created.</p>
 <p>In a few momments you will recieve an email to activate our account.</p>
 <p>Please check you email</p>
+
+<p>Go back to <a href="<%= url_for('/') %>the Homepage</a></p>
+
+  </div>
+</div>
 
 
