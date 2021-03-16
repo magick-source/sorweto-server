@@ -19,5 +19,9 @@
 
 <link href="/sorweto/css/main.css" rel="stylesheet" type="text/css">
 
+% if ( stash 'favicon' ) {
+<link href="<%= $favicon %>" rel="icon" type="image/png">
+% }
+
 <%= html_hook 'html_head' %>
 
