@@ -1,13 +1,14 @@
 <header class="navbar navbar-expand-md navbar-light">
   <div class="container-xl">
-    <a href="<%= url_for('/') %>" class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pr-0 pr-md-3">
+    <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+      <a href="<%= url_for('/') %>">
 % if ( stash 'logo' ) {
-      <img src="<%= stash 'logo' %>" alt="<%= $sitename %>" class="navbar-brand-image">
+        <img src="<%= stash 'logo' %>" alt="<%= $sitename %>" class="navbar-brand-image" heigth="32">
 % } else {
-      <h2 class="navbar-brand"><%= $sitename %></h2>    
+        <%= $sitename %>
 % }
-    </a>
-
+      </a>
+  </h1>
 %= include_maybe 'inc/topbar_menu'
 
   </div>
