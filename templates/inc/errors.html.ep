@@ -9,8 +9,6 @@
 
 % if ( @errors ) {
 <div class="errors">
-ERRORS HERE: 
-<%= dumper \@errors %>
 %   for my $error (@errors) {
 %     $error = { error_type => 'danger', message => $error }
 %       unless ref $error;
