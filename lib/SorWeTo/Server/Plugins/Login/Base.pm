@@ -72,12 +72,14 @@ sub add_login_options {
 }
 
 sub get_login_option {
-  my ($self, $type, $identifier) = @_;
+  my ($self, $type, $identifier, $flags) = @_;
+
+  $flags ||= 'active';
 
   my ($rec) = SorWeTo::Db::UserLogin->search({
       login_type  => $type,
       identifier  => $identifier,
-      flags       => 'active',
+      flags       => $flags,
     });
 
   eval {

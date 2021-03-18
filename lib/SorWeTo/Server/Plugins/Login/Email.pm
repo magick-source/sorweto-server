@@ -287,10 +287,13 @@ sub _confirm_email {
     return $c->render('login/email/error_confirming_email');
   }
 
-  my ($user_login) = $self->get_login_option('email', $data->{email});
+  my ($user_login) = $self->get_login_option(
+                        'email', $data->{email}, 'pending'
+                      );
+
   unless ($user_login) {
     # This should not really happen, but... you never know, right?
-    $c->evwarn('Valid tmp_blog for email confirmation, but no user_login');
+    warn 'Valid tmp_blog for email confirmation, but no user_login';
     return $c->render('login/email/error_confirming_email');
   }
 
