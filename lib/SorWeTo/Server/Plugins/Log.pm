@@ -176,6 +176,8 @@ sub _send_event {
   return unless $evt;
 
   $evt->{core}->{time_sent} = int(Time::HiRes::time() * 1000);
+  $evt->{core}->{wallclock} 
+    = $evt->{core}->{time_sent} - $evt->{core}->{time_created};
 
   my $evs = to_json( $evt, { pretty => 0, utf8 => 1 });
 
