@@ -21,7 +21,7 @@ sub init {
   );
 
   if ( $dbinfo->{trace} ) {
-    DBI->trace('3|SQL');
+    DBI->trace('SQL');
   } else {
     DBI->trace(0);
   }
