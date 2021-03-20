@@ -13,8 +13,6 @@ sub register {
     $dbinfo = $app->config->config('mysql')
       unless keys %$dbinfo;
   }
-use Data::Dumper;
-print STDERR "mysql: ", Dumper($conf, $dbinfo);
 
   unless ($dbinfo) {
     die "Missing MySQL configuration ([plugin:MySQL] or [mysql]"
