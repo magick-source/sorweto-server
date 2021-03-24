@@ -185,7 +185,7 @@ sub __start_tracking {
 }
 
 sub __anonymous {
-  return SorWeTo::User->new( @_ );
+  return SorWeTo::User->unknown_user();
 }
 
 1;
