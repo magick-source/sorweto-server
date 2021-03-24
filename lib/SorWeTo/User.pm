@@ -40,5 +40,13 @@ sub is_anonymous {
 };
 *anonymous = *is_anonymous;
 
+sub unknown_user {
+  my ($class) = @_;
+
+  my $user = __PACKAGE__->new();
+
+  return $user;
+}
+
 1;
 
