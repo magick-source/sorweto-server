@@ -27,6 +27,14 @@ sub register {
   $r->any('/login/confirm_email/:token')->to(cb => sub {
       $self->_confirm_email( @_ );
     });
+  $r->any('/login/email/forgot-password')->to(cb => sub {
+      $self->_forgot_password( @_ );
+    });
+  $r->any('/login/email/forgot-password/:tmp_hash'
+      => [tmp_hash  => qr/[0-9a-h]{30}/]
+    )->to(cb => sub {
+      $self->_forgot_password_checked( @_ );
+    });
 
   $login->app->helper( inline_login => sub { $self->_inline_login( @_ ) });
 
@@ -225,10 +233,6 @@ sub _new_user {
       eval {
         my $user = $self->create_user_if_available( $uname );
         if ( $user ) {
-          my %data = (
-            user_id => $user->user_id,
-            email   => $email,
-          );
           $self->add_login_options( $user,
               { login_type =>'email',
                 identifier => $email,
@@ -239,17 +243,12 @@ sub _new_user {
               }
             );
 
-
-          my $tmp_id = generate_random_hash('checkemail');
-          $c->tmp_blob_store( 'checkemail', $tmp_id, \%data );
-          $c->send_email('login/confirm_email', {
-                email_type=> 'confirm-email',
-                email     => $email,
-                username  => $user->username,
-                blob_id   => $tmp_id,
-                confirm_url =>
-                   => $c->url_for("/login/confirm_email/$tmp_id")->to_abs,
-              });
+          my %data = (
+            user_id   => $user->user_id,
+            username  => $user->username,
+            email     => $email,
+          );
+          $self->__send_activation_email( $c, \%data );
         } else {
           push @errors, 'Username selected is not available, please try a different one';
         }
@@ -307,6 +306,147 @@ sub _confirm_email {
   $c->tmp_blob_delete('checkemail', $token );
 
   $c->render( 'login/email/email_confirmed');
+}
+
+sub _forgot_password {
+  my ($self, $c) = @_;
+
+  my $username = $c->param('username');
+  my $login;
+  if ( $username =~ m{\A\w{3,18}\z} ) {
+    $login = $self->get_login_option_by_username( 'email', $username );
+    unless ($login) {
+      $login = $self->get_login_option_by_username(
+                  'email', $username, 'pending'
+                );
+    }
+
+  } elsif ( check_email( $username ) ) {
+    $login = $self->get_login_option('email', $username );
+    unless ($login) {
+      $login = $self->get_login_option('email', $username, 'pending' );  
+    }
+
+  }
+
+  if ( $login ) {
+    my ($user) = SorWeTo::Db::User->search_where( id => $login->user_id );
+    my $data = {
+        user_id   => $user->user_id,
+        username  => $user->username,
+        email     => $login->identifier,
+      };
+
+    if ( $login->flags =~ m{pending} ) {
+      $self->__send_activation_email( $c, $data );
+
+      return $c->render('login/email/account_not_activated');
+
+    } else {
+      $self->__send_change_password_email( $c, $data );
+
+      return $c->render('login/email/forgot_password_email_sent');
+    }
+  }
+
+  $c->render( 'login/email/forgot_password' );
+}
+
+sub _forgot_password_checked {
+  my ($self, $c) = @_;
+
+  my $token = $c->stash->{tmp_hash}; 
+  my $data  = $c->tmp_blob_load( 'checkemail', $token );
+  unless ($data) {
+    return $c->reply->not_found;
+  }
+
+  my %pwd = ();
+  my @errors = ();
+
+  my $uname = $data->{username};
+
+  my $password;
+  if ($password = $c->param('password')) {
+    $pwd{password} = $password;
+    unless (check_password( $password, $uname )) {
+      push @errors, 'Invalid password - 8+ characters with numbers or punctuation, 12+ no restrictions';
+    }
+  } else {
+    push @errors, 'the Password is required';
+  }
+
+  my $passhash;
+  if (my $passwd2 = $c->param('password2')) {
+    $pwd{password2} = $passwd2;
+    if ( $password eq $passwd2 ) {
+      $passhash = $self->hash_password( $password );
+    } else {
+      push @errors, 'Confirmation password must match the password';
+    }
+  } else {
+    push @errors, 'Confirmation password is required (and must match the password)';
+  }
+
+  @errors = ()
+    unless keys %pwd;
+
+  if ( keys %pwd and !@errors ) {
+    my $login = $self->get_login_option('email', $data->{email} );
+
+    $login->{info}->{password} = $passhash;
+    $self->update_login_option( $login );
+
+    # Password changed, no need for the blob anymore
+    $c->tmp_blob_delete('checkemail', $token );
+
+    return $c->render( 'login/email/password_changed' ); 
+  }
+
+  $c->stash->{errors} = \@errors;
+  $c->stash->{'forgot-token'} = 1;
+  $c->stash->{pwd} = \%pwd;
+  $c->render( 'login/email/change_password' );
+}
+
+sub __send_activation_email {
+  my ($self, $c, $data) = @_;
+
+  my $username  = $data->{username};
+  my $email     = $data->{email};
+
+  my $tmp_id = generate_random_hash('checkemail');
+  $c->tmp_blob_store( 'checkemail', $tmp_id, $data );
+  $c->send_email('login/confirm_email', {
+        email_type=> 'confirm-email',
+        email     => $email,
+        username  => $username,
+        blob_id   => $tmp_id,
+        confirm_url =>
+          => $c->url_for("/login/confirm_email/$tmp_id")->to_abs,
+      });
+
+  return;
+}
+
+sub __send_change_password_email {
+  my ($self, $c, $data) = @_;
+
+  my $username  = $data->{username};
+  my $email     = $data->{email};
+
+  my $tmp_id = generate_random_hash('checkemail');
+  $c->tmp_blob_store( 'checkemail', $tmp_id, $data );
+  $c->send_email('login/change_password', {
+        email_type=> 'change-password',
+        email     => $email,
+        username  => $username,
+        blob_id   => $tmp_id,
+        change_url =>
+          => $c->url_for("/login/email/forgot-password/$tmp_id")->to_abs,
+      });
+
+  return;
 }
 
 1;

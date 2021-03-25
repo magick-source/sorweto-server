@@ -1,5 +1,9 @@
-% layout 'default';
+% layout 'basic';
 
-<div class="error">
-<%= __('error-confirming-email') %>
+<div class="card card-md">
+  <div class="card-body">
+
+<p><%= __('error-confirming-email') %></p>
+
+  </div>
 </div>

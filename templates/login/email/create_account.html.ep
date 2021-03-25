@@ -35,7 +35,7 @@
           class="form-control" />
       </div>
       <div class="mb-3">
-        <label class="form-control">
+        <label class="form-label">
           <%= __('fieldname-confirm-password') %>
         </label>
         <input type="password" name="password2"

@@ -3,13 +3,11 @@
 <div class="card card-md">
   <div class="card-body">
 
-<p><%= __('account-created--created-success') %></p>
-<p><%= __('account-created--email-shortly') %></p>
-<p><%= __('account-created--check-email') %></p>
+<p><%= __('account-not-active--info') %></p>
+<p><%= __('account-not-active--resent') %></p>
+<p><%= __('account-not-active--check-spam-box') %></p>
 
 <p><a href="<%= url_for('/') %>"><%= __('go-back-to-the-homepage') %></a></p>
 
   </div>
 </div>
-
-

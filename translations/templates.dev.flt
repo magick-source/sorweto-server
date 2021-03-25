@@ -12,13 +12,66 @@ login-email-placeholder-password2 = Type your password again for confirmation
 
 login-to-proceed        = Login to Proceed
 
-# login/login.html.ep
+go-back-to-the-homepage = Go back to the Homepage
 
+
+# login/login.html.ep
 login-form-no-account-yet = Don't have an account yet?
 login-form-sign-up        = Sign up now!
 
-# email/login/confirm_email.html.ep
+# login/backends/email.html.ep
+fieldname-username-or-email       = Username or Email
+login-email-forgot-password       = I forgot my password
+buttonlabel-login                 = Login
 
+# login/email/account_created.html.ep
+account-created--created-success  = Your account was successfully created.
+account-created--email-shortly    = In a few momments you will recieve an
+    email to activate your account.
+
+account-created--check-email      = Please check you email
+
+
+# login/email/account_not_activated.html.ep
+account-not-active--info            = Your email was not confirmed yet, so your
+    account is not active yet.
+
+account-not-active--resent          = We did send you a new confirmation email.
+account-not-active--check-spam-box  = If you don't recieve it shortly, please
+    check you SPAM box.
+
+# login/email/create_account.html.ep
+create-account--title       = Create an account
+create-account--email-info  = the email will be used to activate the account
+    and send you any notifications you subscribe to.
+buttonlabel-create-account  = Create account
+
+# login/email/change_password.html.ep
+change-password--title                = Change your password
+fieldname-oldpassword                 = Old Password
+login-email-placeholder-old-password  = Type your old password
+buttonlabel-change-password           = Change password
+
+# login/email/email_confirmed.html.ep
+email-confirmed-successfully = Your email was confirmed successfully.
+
+# login/email/forgot_password.html.ep
+forgot-password--title            = Password reset
+forgot-password--alert-title      = Reseting your password
+forgot-password--alert-text       = If you need to reset your password,
+  you can type your username or email in the field below. We are going to
+  send you an email with a link that will enable you to reset your password.
+
+# login/email/forgot_password_email_sent.html.ep
+forgot-sent--email-sent   = We did send you an email with a link that
+    will enable you to change your password.
+forgot-sent--check-email  = Please check you email.
+
+# login/email/password_changed.html.ep
+password-changed--success = Your password was succesfully changed.
+
+## EMAILS
+# email/login/confirm_email.html.ep
 confirm-email-header = Confirm Email Address
 confirm-email-hello  = Hello, { $username }
 confirm-email-why    = You are getting this email because someone tried to
@@ -31,18 +84,15 @@ confirm-email-to-confirm = To confirm your email address and activate your
 
 confirm-email-confirm-button = Confirm email address
 
-# login/email/create_account.html.ep
+# email/login/change_password.html.ep
+chpwd-email--title          = Change your password
+chowd-email--hell o         = Hello, { $username }
+chpwd-email--why            = You are getting this email because you (we hope)
+    tried to reset your password in the website '{ $sitename }'. If you didn't
+    do it, please ignore this email.
 
-create-account--title       = Create an account
-create-account--email-info  = the email will be used to activate the account
-    and send you any notifications you subscribe to.
-buttonlabel-create-account  = Create account
+chpwd-email--more-about     = Click to know more about { $sitename }
+chpwd-email--to-change      = To reset your password, click the button:
+chpwd-email--change-button  = Reset Password
 
-# login/email/email_confirmed.html.ep
 
-email-confirmed-successfully = Your email was confirmed successfully.
-
-# login/backends/email.html.ep
-fieldname-username-or-email       = Username or Email
-login-email-forgot-password       = I forgot my password
-buttonlabel-login                 = Login

@@ -91,7 +91,9 @@ sub get_login_option {
 }
 
 sub get_login_option_by_username {
-  my ($self, $type, $username) = @_;
+  my ($self, $type, $username, $flags) = @_;
+
+  $flags ||= 'active';
 
   my ($user) = SorWeTo::Db::User->search({ username => $username });
   return unless $user;
@@ -99,7 +101,7 @@ sub get_login_option_by_username {
   my ($rec) = SorWeTo::Db::UserLogin->search({
       login_type  => $type,
       user_id     => $user->id,
-      flags       => 'active',
+      flags       => $flags,
     });
   
   eval {
@@ -108,6 +110,18 @@ sub get_login_option_by_username {
   };
 
   return $rec;
+}
+
+sub update_login_option {
+  my ($self, $rec) = @_;
+
+  my $info = to_json( $rec->{info}, {utf8=>1} );
+  local $rec->{info};
+
+  $rec->info( $info );
+  $rec->update();
+
+  return;
 }
 
 sub hash_password {

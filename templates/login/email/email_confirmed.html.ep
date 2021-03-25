@@ -1,13 +1,17 @@
-% layout 'default';
+% layout 'basic';
 
-<div class="success">
-  <p><%= __('email-confirmed-successfully') %></p>
+<div class="card card-md">
+  <div class="card-body">
 
-  <p>
-    <span class="go_to_login_button">
-      <a href='/login'>
-        <%= __('login-to-proceed') %>
-      </a>
-    </span>
-  </p>
+ <p><%= __('email-confirmed-successfully') %></p>
+
+<p>
+  <span class="go_to_login_button">
+    <a href='/login'>
+      <%= __('login-to-proceed') %>
+    </a>
+  </span>
+</p>
+
+  </div>
 </div>
