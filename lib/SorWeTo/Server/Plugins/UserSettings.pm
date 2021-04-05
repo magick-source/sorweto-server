@@ -147,7 +147,7 @@ sub set {
   }
 
   if ($def->{is_number}) {
-    $rec->value_int( $value );
+    $rec->value_num( $value );
   } else {
 
     #TODO(maybe): pack on update
@@ -178,8 +178,8 @@ sub increment_by {
 
   return if $self->user_id < 1;
 
-  unless (defined $diff and $diff =~ m{[^\-\d\.]}) {
-    warn "FAILED: Trying to increment by non-numeric value";
+  unless (defined $diff and $diff =~ m{\A(\-)?\d*(\.\d+)?\z}) {
+    warn "FAILED: Trying to increment by non-numeric value ($diff)";
     return;
   }
 
@@ -197,11 +197,11 @@ sub increment_by {
   }
 
   my $rec = $self->_data->{ $name };
-  if ( $rec ) {
+  if ( $rec  and $rec->value_num ) {
     $rec->increment_setting( $diff );
 
   } else {
-    # incrementing from 0 is a set
+    # incrementing from 0 is a set - this also handles the set from null
     $self->set( $name, $diff );
   }
 
