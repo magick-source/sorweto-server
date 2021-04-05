@@ -79,6 +79,8 @@ has _data => \&_load_settings;
 sub _load_settings {
   my ($self) = @_;
 
+  return {} if $self->user_id < 1;
+
   my @recs = SorWeTo::Db::UserSetting
                 ->search_where( user_id => $self->user_id );
  
@@ -113,6 +115,8 @@ sub get {
 
 sub set {
   my ($self, $name, $value) = @_;
+
+  return if $self->user_id < 1;
 
   unless (defined $value) {
     warn "FAILED: setting to undef - use ->unset instead";
@@ -158,6 +162,8 @@ sub set {
 sub unset {
   my ($self, $name) = @_;
 
+  return if $self->user_id < 1;
+
   my $rec = $self->_data->{ $name };
   return unless $rec;
 
@@ -169,6 +175,8 @@ sub unset {
 
 sub increment_by {
   my ($self, $name, $diff) = @_;
+
+  return if $self->user_id < 1;
 
   unless (defined $diff and $diff =~ m{[^\-\d\.]}) {
     warn "FAILED: Trying to increment by non-numeric value";
