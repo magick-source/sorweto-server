@@ -43,8 +43,6 @@ sub add_user_helper {
     no strict 'refs';
     *{ "SorWeTo::User::$name" } = sub {
       my ($user, @params) = @_;
-      use Data::Dumper;
-      print STDERR "user->$name: ", Dumper([ map { ref $_ || $_ }  @_ ]);
       unless (ref $user and $user->isa('SorWeTo::User')) {
         if (defined $user) {
           unshift @params, $user;
