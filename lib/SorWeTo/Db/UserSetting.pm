@@ -24,7 +24,7 @@ EoQ
 sub increment_setting {
   my ($self, $inc) = @_;
 
-  $self->increment_sql->execute( $self->id, $inc );
+  $self->sql_increment->execute( $inc, $self->id );
 
   return;
 }
