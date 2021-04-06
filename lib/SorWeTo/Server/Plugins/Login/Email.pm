@@ -186,6 +186,8 @@ sub _new_user {
   my %user = ();
   my @errors = ();
   if (my $uname = $c->param('username')) {
+    $user{display_name} = $uname;
+    $uname = lc( $uname );
     $user{username} = $uname;
     if ($uname =~ m{\A\w{3,18}\z}) {
       my $old_user = $c->user_by_username( $uname );
@@ -229,9 +231,21 @@ sub _new_user {
       push @errors, 'Confirmation password is required (and must match the password)';
     }
 
+    if (my $display_name = $c->param('display_name')) {
+      $user{ display_name } = $display_name;
+    }
+    if ($user{display_name} =~ m{[<>&]} ) {
+      push @errors, "Invalid Display Name - please don't use <, > or & in your display name";
+    }
+    unless ($user{display_name} =~ m{\A[^<>&]{2,20}\z}) {
+      push @errors, "invalid Display Name - use 2 to 20 Characters, please";
+    }
+
     unless (@errors) {
       eval {
-        my $user = $self->create_user_if_available( $uname );
+        my $user = $self->create_user_if_available( $uname, {
+            display_name  => $user{ display_name },
+          });
         if ( $user ) {
           $self->add_login_options( $user,
               { login_type =>'email',

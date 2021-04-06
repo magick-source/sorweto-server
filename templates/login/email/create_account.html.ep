@@ -15,6 +15,14 @@
       </div>
       <div class="mb-3">
         <label class="form-label">
+          <%= __('fieldname-displayname') %>
+        </label>
+        <input name="display_name" value="<%= $user->{display_name} %>"
+          placeholder="<%= __('login-email-placeholder-displayname') %>"
+          class="form-control" autocomplete="off" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">
           <%= __('fieldname-email-address') %>
           <span class="form-label-description">
             <i class="fa fa-info-circle data-toggle="tooltip"
