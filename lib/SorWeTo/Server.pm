@@ -150,10 +150,16 @@ sub html_hook {
 sub _sitevars {
   my ($self, $c) = @_;
 
+  my $base    = $c->url_for('/')->to_abs->to_string;
+  my $apibase = $c->url_for('api')->to_abs->to_string;
+
+  $base     =~ s{\Ahttps?:}{};
+  $apibase  =~ s{\Ahttps?:}{};
+
   my %sitevars = (
     %{ $c->stash->{sitevars} || {} },
-    apibase => $c->url_for('api')->to_abs->to_string,
-    base    => $c->url_for('/')->to_abs->to_string,
+    apibase => $apibase,
+    base    => $base,
   );
   my $sitevars_js = to_json( \%sitevars );
 
