@@ -11,7 +11,7 @@ sub init {
 
   $self->app->helper( html_hook => sub { $self->_html_hook_handler( @_ ) });
 
-  return;
+  return $self;
 }
 
 sub _html_hook_handler {
