@@ -8,6 +8,7 @@ use Exporter qw(import);
 our @EXPORT_OK = qw(
   check_email
   check_password
+  check_username
 );
 
 sub check_email {
@@ -35,6 +36,12 @@ sub check_password {
   return if length($password)<12 and $password !~ /[\d\W]/;
 
   return 1;
+}
+
+sub check_username {
+  my ($username) = @_;
+
+  return $username =~ m{\A[a-zA-Z0-9\-\.]{3,18}\z};
 }
 
 1;

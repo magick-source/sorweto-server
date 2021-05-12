@@ -7,6 +7,7 @@ use SorWeTo::Error;
 use SorWeTo::Utils::DataChecks qw(
     check_email
     check_password
+    check_username
   );
 
 use SorWeTo::Utils::Digests qw(
@@ -100,7 +101,7 @@ sub __inline_login {
   if ( check_email( $username ) ) {
     return $self->__login_with_email( $c, $username, $passwd );
 
-  } elsif ( $username =~ m{\A\w{3,18}\z} ) {
+  } elsif ( check_username( $username ) ) {
     return $self->__login_with_username( $c, $username, $passwd );
 
   } else {
@@ -189,7 +190,7 @@ sub _new_user {
     $user{display_name} = $uname;
     $uname = lc( $uname );
     $user{username} = $uname;
-    if ($uname =~ m{\A\w{3,18}\z}) {
+    if ( check_username( $uname )) {
       my $old_user = $c->user_by_username( $uname );
       if ($old_user) {
         push @errors, 'Username already exists, please try a different one';
@@ -327,7 +328,7 @@ sub _forgot_password {
 
   my $username = $c->param('username');
   my $login;
-  if ( $username =~ m{\A\w{3,18}\z} ) {
+  if ( check_username( $username ) ) {
     $login = $self->get_login_option_by_username( 'email', $username );
     unless ($login) {
       $login = $self->get_login_option_by_username(
