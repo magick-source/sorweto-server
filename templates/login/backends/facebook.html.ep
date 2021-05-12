@@ -1,0 +1,6 @@
+<div class="">
+  <button class="btn btn-primary btn-block facebook-login p-3">
+    <i class="fab fa-facebook mr-3" style="font-size:1.5em"></i> Login with Facebook
+  </button>
+</div>
+

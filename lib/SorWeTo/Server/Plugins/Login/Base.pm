@@ -10,6 +10,8 @@ use SorWeTo::User;
 use SorWeTo::Error;
 
 use SorWeTo::Utils::Digests qw();
+use SorWeTo::Utils::String qw(urify);
+use SorWeTo::Utils::DataChecks qw(check_username);
 
 use JSON qw(from_json to_json);
 
@@ -33,7 +35,7 @@ sub create_user_if_available {
 
   die SorWeTo::Error->new(
       message => "Invalid Username",
-    ) unless $username =~ m{\A[A-Za-z]\w+\z};
+    ) unless check_username( $username );
 
   my ($user) = SorWeTo::Db::User->search({ username => $username });
   return if $user; # user exists, we return nothing.
@@ -47,6 +49,59 @@ sub create_user_if_available {
 
   $user = SorWeTo::Db::User->create(\%uinfo);
   $user = SorWeTo::User->from_dbuser( $user );
+
+  return $user;
+}
+
+sub create_user_from_external {
+  my ($self, %params) = @_;
+
+  my $c = delete $params{c};
+  use Data::Dumper;
+  print STDERR "from_external: ", Dumper(\%params);
+
+  my $uname = $params{ username }
+            || $params{display_name}
+            || 'nkxu'; # Not Known eXternal User
+
+  $uname = urify( $uname );
+
+  my $euid  = $params{external_id};
+
+  my %user_data = (
+      ($params{display_name} ? (display_name => $params{display_name}):()),
+      flags => 'active',
+    );
+
+  my $slen = 0;
+  my $user;
+  while ( $slen < length $euid ) {
+    my $uname2try = $uname;
+    if ($slen) {
+      $uname2try .= '-'.substr($euid, -$slen);
+    }
+    
+    print STDERR " >>> Checking '$uname2try'\n";
+    $user = $self->create_user_if_available( $uname2try, \%user_data );
+
+    print STDERR " +++ Got it\n" if $user;
+
+    last if $user;
+    $slen++;
+  }
+
+  if ($user) {
+    $self->add_login_options( $user,
+        { login_type  => $params{source},
+          identifier  => $params{external_id},
+          flags       => 'active',
+        }
+      );
+
+    if ($params{auto_login} and $c ) {
+      $c->session->{user_id} = $user->user_id;
+    }
+  }
 
   return $user;
 }
