@@ -18,7 +18,7 @@ sub register {
 
   $self->config( $conf || {} );
 
-  $login->app->html_hook( html_head => sub { $self->_html_head( @_ ) } );
+  $login->app->html_hook( html_body_end => sub { $self->_html_body_end( @_ ) } );
 
   my $r = $login->app->routes;
   $r->api->post('login/facebook' => sub { $self->_handle_login( @_ ) } );
@@ -140,7 +140,7 @@ sub decode_fb_data {
   return decode_base64( $input );
 }
 
-sub _html_head {
+sub _html_body_end {
   my ($self, $c) = @_;
 
   return unless $c->stash->{on_login_page};

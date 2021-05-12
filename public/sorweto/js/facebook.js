@@ -1,4 +1,4 @@
-//TODO(maybe): only init fb after the button was clicked?
+var fb_inited = 0;
 
 window.fbAsyncInit = function() {
   FB.init({
@@ -8,36 +8,42 @@ window.fbAsyncInit = function() {
     version    : 'v10.0'
   });
 
-  FB.getLoginStatus(function(response) {
-    if ( response.status == 'connected' ) {
-      swt_login_with_facebook(response.authResponse);
-    }
-  });
+  fb_inited = 1;
+
+  facebook_login();
 };
 
-(function(d, s, id){
+function load_facebook(d, s, id) {
    var js, fjs = d.getElementsByTagName(s)[0];
    if (d.getElementById(id)) {return;}
    js = d.createElement(s); js.id = id;
    js.src = "https://connect.facebook.net/en_US/sdk.js";
    fjs.parentNode.insertBefore(js, fjs);
- }(document, 'script', 'facebook-jssdk'));
+}
 
 $(document).ready(function () {
-  $('.facebook-login').click(function(){ 
-    FB.getLoginStatus(function(response) {
-      if ( response.status == 'connected' ) {
-        swt_login_with_facebook(response.authResponse);
-      } else {
-        FB.login(function(response){
-          swt_login_with_facebook(response.authResponse);
-        });
-      }
-    },{
-        scope: 'public_profile,email'
-    });
+  $('.facebook-login').click(function(){
+    if ( ! fb_inited ) {
+      load_facebook(document,'script', 'facebook-jssdk');
+    } else {
+      facebook_login();
+    }
   });
 });
+
+function facebook_login() {
+  FB.getLoginStatus(function(response) {
+    if ( response.status == 'connected' ) {
+      swt_login_with_facebook(response.authResponse);
+    } else {
+      FB.login(function(response){
+        swt_login_with_facebook(response.authResponse);
+      });
+    }
+  },{
+    scope: 'public_profile,email'
+  });
+}
 
 function swt_login_with_facebook( response ) {
   url = sitevars.apibase + '/login/facebook';
