@@ -1,8 +1,21 @@
 % layout 'basic';
 
-% for my $backend (@$backends) {
+% my %backends = map { $_ => 1 } @$backends;
+% if (scalar grep { $_ ne 'email' } @$backends) {
+<div class="card card-md">
+  <div class="card-body">
+
+%   for my $backend (@$backends) {
+%     next if $backend eq 'email';
 %=    include_maybe "login/backends/$backend";
+%   }
+
+  </div>
+</div>
 % }
+
+% if ($backends{ email }) {
+%=  include_maybe "login/backends/email";
 
 <div class="text-center text-muted">
   <%= __('login-form-no-account-yet') %>
@@ -10,3 +23,5 @@
     <%= __('login-form-sign-up') %>
   </a>
 </div>
+
+% }
