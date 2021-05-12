@@ -18,6 +18,8 @@ sub urify {
   $url =~ s{\-+}{-}g;
   $url =~ s{\-+\z}{};
 
+  $url = lc( $url );
+
   return $url;
 }
 
