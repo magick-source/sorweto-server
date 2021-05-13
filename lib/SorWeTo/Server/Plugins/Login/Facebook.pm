@@ -2,8 +2,6 @@ package SorWeTo::Server::Plugins::Login::Facebook;
 
 use Mojo::Base qw(SorWeTo::Server::Plugins::Login::Base);
 
-use SorWeTo::Utils::String qw(urify);
-
 use MIME::Base64 qw(decode_base64);
 use Digest::SHA qw(hmac_sha256);
 use JSON qw(from_json);
