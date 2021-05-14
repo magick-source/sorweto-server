@@ -1,0 +1,11 @@
+<div class="position-fixed swt-toast-placed">
+  <div class="toast show cookie-consent" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+      <p>This website uses cookies to implement some of its functionality.</p>
+      <div class="row ml-auto">
+        <button type="button" class="btn btn-primary btn-sm consent-ok">ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/sorweto/js/cookie_consent.js"></script>

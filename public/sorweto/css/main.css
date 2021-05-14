@@ -6,3 +6,9 @@
 .swt-full-height {
   min-height:100%;
 }
+
+.swt-toast-placed {
+  z-index: 1250;
+  bottom: 10px;
+  right: 10px;
+}
