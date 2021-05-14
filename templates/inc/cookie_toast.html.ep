@@ -3,7 +3,8 @@
     <div class="toast-body">
       <p>This website uses cookies to implement some of its functionality.</p>
       <div class="row ml-auto">
-        <button type="button" class="btn btn-primary btn-sm consent-ok">ok</button>
+        <button type="button" class="btn btn-primary btn-sm consent-ok">Continue</button>
+        <button type="button" class="btn btn-sm no-cookies">Do not track me</button>
       </div>
     </div>
   </div>
