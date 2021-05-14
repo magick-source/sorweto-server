@@ -5,21 +5,23 @@
 %= include 'inc/shared/html-head'
 
   </head>
-  <body class="antialiased border-top-wide border-primary d-flex flex-column">  
+  <body class="antialiased">
+    <div class="page">
+%= include 'inc/header'
 
 <div class="flex-fill d-flex flex-column justify-content-center">
   <div class="container-tight py-6">
 
-%= include 'inc/basic-header'
-
-  
-
 %= include 'inc/errors'
 
-<%= content %>
+%= content
 
   </div>
 </div>
+
+%= include 'inc/footer'
+
+    </div>
 
 %= include 'inc/shared/body-end'
 
