@@ -31,7 +31,7 @@
           </span>
         </label>
         <input name="email" value="<%= $user->{email} %>"
-          placeholder="<%= __('login-email-placeholder-password') %>"
+          placeholder="<%= __('login-email-placeholder-email') %>"
           class="form-control" />
       </div>
       <div class="mb-3">
