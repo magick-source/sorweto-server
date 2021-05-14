@@ -10,7 +10,7 @@
           <%= __('fieldname-username') %>
         </label>
         <input name="username" value="<%= $user->{username} %>"
-          placeholder="<%= __('login-email-placeholder-username') %>"
+          placeholder="<%= __('login-email-placeholder-username-only') %>"
           class="form-control" autocomplete="off" />
       </div>
       <div class="mb-3">

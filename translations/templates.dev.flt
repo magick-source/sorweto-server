@@ -7,10 +7,11 @@ fieldname-email-address = Email Address
 fieldname-password      = Password
 fieldname-confirm-password = Confirm Password
 
-login-email-placeholder-username    = Enter username or email address
-login-email-placeholder-displayname = Enter the name to be displayed
-login-email-placeholder-password    = Enter your password
-login-email-placeholder-password2   = Type your password again for confirmation
+login-email-placeholder-username-only = Enter username
+login-email-placeholder-username      = Enter username or email address
+login-email-placeholder-displayname   = Enter the name to be displayed
+login-email-placeholder-password      = Enter your password
+login-email-placeholder-password2     = Type your password again for confirmation
 
 login-to-proceed        = Login to Proceed
 
