@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+%= include 'inc/shared/html-head'
+
+  </head>
+  <body class="antialiased">
+    <div class="page">
+%= include 'inc/header'
+
+      <div class="content py-0">
+        <div class="container-xl py-6">
+
+          <div class="row justify-content-md-center">
+            <div class="col col-lg-10 col-sm-12">
+              <div class="card card-lg">
+                <div class="card-body">
+%= content
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+%= include 'inc/footer'
+    </div>
+
+%= include 'inc/shared/body-end'
+
+  </body>
+</html>
