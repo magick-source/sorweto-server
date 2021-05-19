@@ -8,6 +8,8 @@ use SorWeTo::Server::htmlHooks;
 
 use Mojo::JSON qw(to_json);
 
+our $VERSION = '0.2.0';
+
 has config => undef;
 
 has last_hostname => undef;
