@@ -84,14 +84,28 @@ sub warmup {
   return;
 }
 
+
+my %loaded = ();
 sub load_plugin {
   my ($self, $plugin, $config) = @_;
+
+  return if $loaded{ $plugin };
 
   unless ($config) {
     $config = $self->config->config("plugin:$plugin") || {};
   }
 
   my $pluged = $self->plugins->register_plugin( $plugin, $self, $config);
+  if ($pluged) {
+    $loaded{ $plugin }++;
+
+    if ( $pluged->can('dependencies') ) {
+      my @deps = $pluged->dependencies();
+      for my $dep (@deps) {
+        $self->load( $dep );
+      }
+    }
+  }
 
   return ((defined wantarray) ? $pluged : ());
 }
