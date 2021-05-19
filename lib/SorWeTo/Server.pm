@@ -8,7 +8,7 @@ use SorWeTo::Server::htmlHooks;
 
 use Mojo::JSON qw(to_json);
 
-our $VERSION = '0.2.0';
+our $VERSION = '0.2.1';
 
 has config => undef;
 
@@ -104,7 +104,7 @@ sub load_plugin {
     if ( $pluged->can('dependencies') ) {
       my @deps = $pluged->dependencies();
       for my $dep (@deps) {
-        $self->load( $dep );
+        $self->load_plugin( $dep );
       }
     }
   }
