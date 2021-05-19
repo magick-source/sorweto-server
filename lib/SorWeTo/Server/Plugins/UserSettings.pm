@@ -12,6 +12,8 @@ sub register {
 
   $app->helper( register_user_setting => sub { $self->register_setting( @_ ) });
 
+  $app->hook( warming_up => sub { $self->post_register( $app ) });
+
   return $self;
 }
 

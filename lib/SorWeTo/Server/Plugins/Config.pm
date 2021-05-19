@@ -41,6 +41,8 @@ sub register {
 
 	$app->helper( _c	=> \&config_helper );
 	$app->helper( config	=> \&config_helper );
+
+  return $self;
 }
 
 sub config {

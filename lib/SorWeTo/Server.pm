@@ -25,7 +25,8 @@ sub startup {
 
   unshift @{$self->plugins->namespaces}, 'SorWeTo::Server::Plugins';
 
-  $self->plugins->register_plugin('config', $self,  {file => 'server.ini'});
+  $self->plugins->register_plugin('config', $self,  {file => 'server.ini'})
+    unless $self->config;
 
  
   my $session_backend = $self->config->config('sessions', 'backend');
@@ -58,87 +59,69 @@ sub startup {
   $defaults->{show_sidebar}     = 1;
   $defaults->{default_language} = $self->config->config('_', 'default_language')
                                || 'en';
-
-  my $namespaces = $self->config->config('server','namespaces');
-  if ($namespaces) {
-    $namespaces = [split /\s*[,;]\s*/, $namespaces];
-    unshift @{$self->plugins->namespaces}, $_
-      for grep { $_ } @$namespaces;
-
-  }
+  
   push @{ $self->commands->namespaces }, 'SorWeTo::Server::Command';
 
-  my $plugins = $self->config->config('server', 'plugins') // '';
+  $self->load_plugin('log');
+  $self->load_plugin('UserErrors');
+  $self->load_plugin('translate');
 
-  # we always want to have translations handy
-  unless ($plugins =~ m{\btranslate\b}) {
-    $plugins = $plugins ? "translate,$plugins" : 'translate';
-  }
-  # We really like to have a simple way to send error messages to the user
-  unless ($plugins =~ m{\bUserErrors\b}) {
-    $plugins = 'UserErrors,'.$plugins;
-  }
-  # We always want to have the evlog system around!
-  unless ($plugins =~ m{\blog\b}) {
-    $plugins = 'log,'.$plugins; # by now it should have at least translate
-  }
-  my @pluged = ();
-  if ($plugins) {
-    my @plugins = split /\s*[,;]\s*/, $plugins;
-    my %registered = ();
-    while (my $plugin = shift @plugins) {
-      print STDERR "going to register $plugin\n";
-      next unless $plugin;
-      next if $registered{ $plugin };
-      my $config = $self->config->config("plugin:$plugin") || {};
-      my $pluged = $self->plugins->register_plugin(
-                        $plugin, $self, $config
-                    );
-
-      unless ($pluged) {
-        print STDERR "!!! plugin '$plugin' returned undef\n";
-      }
-      
-      if ($pluged and $pluged->can('dependencies')) {
-        my @depends = $pluged->dependencies();
-        if (@depends) {
-          push @plugins, grep { !$registered{ $_ } } @depends;
-        }
-      }
-      push @pluged, $pluged if $pluged;
-
-      $registered{ $plugin } = 1;
-    }
-  }
-
-  my %plugin_bases = ();
-  my @plugin_dirs = ();
-  for my $pluged ( @pluged ) {
-    my $cls = ref $pluged;
-    $cls =~ s{::}{/}g;
-    $cls.='.pm';
-    
-    my $basepath = $INC{ $cls };
-    if ( $basepath =~ m{/lib/} ) {
-      $basepath =~ s{/lib/.*}{};
-      push @plugin_dirs, $basepath
-        unless $plugin_bases{ $basepath }++;
-    } # no lib dir, not guesses on structure
-
-		next unless $pluged and $pluged->can('post_register');
-		$pluged->post_register( $self );
-	}
-
-  # register public directories in the order of plugin loading;
-  for my $dir (@plugin_dirs) {
-    if ( -d "$dir/public" ) {
-      push @{ $self->static->paths }, "$dir/public";
-    }
-  }
+  $self->register_static;
 
   $self->html_hook( 'html_head', sub { $self->_sitevars( @_ ) });
   $self->helper( api_fail => \&_api_fail );
 
+  return;
+}
+
+sub warmup {
+  my ($self) = @_;
+
+  $self->SUPER::warmup;
+
+  $self->plugins->emit_hook( 'warming_up' );
+
+  return;
+}
+
+sub load_plugin {
+  my ($self, $plugin, $config) = @_;
+
+  unless ($config) {
+    $config = $self->config->config("plugin:$plugin") || {};
+  }
+
+  my $pluged = $self->plugins->register_plugin( $plugin, $self, $config);
+
+  return ((defined wantarray) ? $pluged : ());
+}
+
+sub register_static {
+  my ($self, $path) = @_;
+
+  unless ($path) {
+    my ($pkg, $fname) = caller;
+    return unless $fname;
+
+    $path = $fname;
+    if ($path =~ m{lib/}) {
+      $path =~ s{lib/.*\z}{};
+
+    } else {
+      $pkg =~ s{::}{/}g;
+      $pkg .= '.pm';
+      $path =~ s{$pkg\z}{};
+    }
+  }
+
+  if ( -d "$path/public" ) {
+    push @{ $self->static->paths }, "$path/public";
+
+  } else {
+    warn "'$path/public' is not a directory - not registering static";
+  }
+
+  return;
 }
 
 sub html_hook {

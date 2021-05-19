@@ -23,6 +23,8 @@ sub register {
 	}
 
 	$app->helper( register_themes => sub { $self->register_themes($app, @_ ) });
+  @{$app->renderer->paths} = ();
+  $app->register_themes;
 
 	return $self;
 }
@@ -56,7 +58,7 @@ sub template_path {
 
 	$tmpl = $self->SUPER::template_path( $options )
 		unless $tmpl and -r $tmpl;
-  
+ 
 	return $tmpl;
 }
 
