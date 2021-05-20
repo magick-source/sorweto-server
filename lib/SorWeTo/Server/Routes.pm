@@ -61,7 +61,10 @@ sub __can_route_builder {
         $c->inline_login(); 
       }
 
-      return 1 if $c->user_has_right( $right );
+      if ( $c->user_has_right( $right ) ) {
+        $c->stash->{'swt.restricted'}{ $right }++;
+        return 1;
+      }
 
       $c->reply->not_found();
       return undef;
@@ -157,7 +160,10 @@ sub __loggedin_builder {
     my ($c) = @_;
 
     my $user = $c->user;
-    return 1 if $user and !$user->is_anonymous;
+    if ($user and !$user->is_anonymous) {
+      $c->stash->{'swt.logged_in'} = 1;
+      return 1;
+    }
 
     return undef;
   });
