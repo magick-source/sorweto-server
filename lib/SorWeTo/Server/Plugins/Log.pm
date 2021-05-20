@@ -141,8 +141,6 @@ sub _apply_mask {
 sub _init_event {
   my ( $self, $c ) = @_;
 
-  print STDERR "Initing event\n";
-
   my $event = {
     core => {
       time_created  => int(Time::HiRes::time() * 1000 ),
@@ -158,6 +156,8 @@ sub _init_event {
     },
   };
 
+  $c->app->plugins->emit_hook( log__event_created => $event => $c );
+
   return $event;
 }
 
@@ -169,20 +169,70 @@ sub _start_event {
   return;
 }
 
-sub _send_event {
+sub _finish_event {
   my ($self, $c) = @_;
 
   my $evt = delete $c->stash->{_event2log};
   return unless $evt;
+  
+  $c->app->plugins->emit_hook( log__event_ready_to_send => $evt => $c);
+
+  my $type = $c->stash->{'mojo.static'}   ? 'static'
+           : $c->stash->{'swt.is_api'}    ? 'api'
+           : $c->stash->{'swt.forward'}   ? 'forward'
+           :                                'page';
+
+  my $res_type = $c->res->is_success          ? 'ok'
+               : $c->res->code eq '304'       ? 'cache_hit'
+               : $c->res->is_redirect         ? 'redirect'
+               : $c->res->is_server_error     ? 'server_error'
+               : $c->res->is_client_error     ? 'client_error'
+               :                                'unknown';
+ 
+  $evt->{response} = {
+      code          => $c->res->code,
+      body_size     => $c->res->body_size,
+      header_size   => $c->res->header_size,
+      content_type  => $c->res->headers->content_type || 'unknow',
+      type          => $res_type,
+    };
+
+  $evt->{request}->{type} = $type;
 
   $evt->{core}->{time_sent} = int(Time::HiRes::time() * 1000);
   $evt->{core}->{wallclock} 
     = $evt->{core}->{time_sent} - $evt->{core}->{time_created};
 
+  return $evt;
+}
+
+sub _send_event {
+  my ($self, $c) = @_;
+
+  my $evt = $self->_finish_event( $c );
+
   my $evs = to_json( $evt, { pretty => 0, utf8 => 1 });
 
 ### TODO: send the event for real! This will do for now
   print STDERR "EVT<<\n$evs\n>>\n\n";
+
+  $self->_event_sent( $evt, $c );
+
+  return;
+}
+
+sub _event_sent {
+  my ($self, $evt, $c) = @_;
+
+  my $tstart = int( Time::HiRes::time() * 1000 );
+  $c->app->plugins->emit_hook( log__event_sent => $evt => $c );
+  my $tend = int( Time::HiRes::time() * 1000 );
+
+  my $wall = $tend - $tstart;
+  warn "log_event_sent is taking too long [$wall ms]"
+    if $wall > 10;
+
+  return;
 }
 
 1;
