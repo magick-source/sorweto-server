@@ -35,12 +35,42 @@ sub register {
 
   $self->level( $conf->{evlog_level} || $conf->{log_level} || 5 );
 
-  $app->hook( before_dispatch => sub { $self->_start_event( @_ ) } );
-  $app->hook( after_dispatch  => sub { $self->_send_event( @_ ) } );
+  $self->_hookup_logging($app);
 
 ### TODO: Add support for real eventlog systems
 
   return $self;
+}
+
+sub _hookup_logging {
+  my ($self, $app) = @_;
+
+  my @subs = $app->plugins->subscribers('around_dispatch');
+  if (@subs > 1) { # exception handling is always there
+    warn <<EoW
+There are already subscribers to around_dispatch when adding log.
+
+Make sure that they don't modify the response or you may get weird results
+both in the content of the event and in the response.
+
+A known issue is modifying the response headers after log.
+
+EoW
+  }
+
+  $app->hook( around_dispatch => sub { $self->_around_dispatch( @_ ) } );
+
+  return;
+}
+
+sub _around_dispatch {
+  my ($self, $next, $c) = @_;
+
+  $self->_start_event( $c );
+
+  $next->();
+
+  $self->_send_event( $c );
 }
 
 sub ev_log {
@@ -61,8 +91,6 @@ sub ev_log {
   } else {
     $box->{$last} = $data;
   }
-
-  print STDERR "EventLogged to: $path\n";
 
   return;
 }
