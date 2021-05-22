@@ -39,20 +39,35 @@ sub register {
   $app->helper( stats_count   => sub { $self->_stats_count( @_ ) });
   $app->helper( stats_timing  => sub { $self->_stats_timing( @_ ) });
 
+  $app->helper(
+      register_hook_count => sub { $self->_register_hook_count( @_ ) }
+    );
+
   return $self;
 }
 
 
 # Helpers
+sub _register_hook_count {
+  my ($self, $c, $hook_name, $metric_path) = @_;
+
+  $c->app->hook( $hook_name => sub {
+      my ($c) = @_;
+      use Data::Dumper;
+      print STDERR "on $hook_name handler: ", Dumper( \@_ );
+      $c->stats_count( $metric_path );
+    });
+}
+
 sub _stats_count {
-  my ($self, $metric_path) = @_;
+  my ($self, $c, $metric_path) = @_;
 
   unless ($metric_path) {
     warn "Counting nothing? no metric name or path?";
     return;
   }
 
-  return unless $self->_metric_is_enable( $metric_path );
+  return unless $self->__metric_is_enabled( $metric_path );
 
   $self->backend->count( $metric_path );
 
@@ -60,14 +75,14 @@ sub _stats_count {
 }
 
 sub _stats_timing {
-  my ($self, $metric_path, $timing) = @_;
+  my ($self, $c, $metric_path, $timing) = @_;
 
   unless ($metric_path) {
     warn "timing nothing? no metric name or path?";
     return;
   }
 
-  return unless $self->_metric_is_enable( $metric_path );
+  return unless $self->__metric_is_enabled( $metric_path );
 
   $self->backend->timing( $timing );
 
@@ -87,6 +102,7 @@ sub __metric_is_enabled {
         return;
       }
     }
+    $i++;
   }
 
   return 1;

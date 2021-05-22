@@ -16,7 +16,9 @@ use SorWeTo::Utils::DataChecks qw(check_username);
 use JSON qw(from_json to_json);
 
 sub login_successful {
-  my ($self, $c) = @_;
+  my ($self, $c, $login_type) = @_;
+
+  $c->emit_hook( login_successful => $login_type );
 
   # Maybe in the future we will support hooks on login!
   # so we want to call this even for api logins, but we don't want
@@ -84,8 +86,6 @@ sub create_user_from_external {
     print STDERR " >>> Checking '$uname2try'\n";
     $user = $self->create_user_if_available( $uname2try, \%user_data );
 
-    print STDERR " +++ Got it\n" if $user;
-
     last if $user;
     $slen++;
   }
@@ -102,6 +102,8 @@ sub create_user_from_external {
       $c->session->{user_id} = $user->user_id;
     }
   }
+
+  $c->emit_hook( created_account => $params{source} );
 
   return $user;
 }

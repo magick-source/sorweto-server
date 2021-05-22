@@ -77,7 +77,7 @@ sub _handle_login {
 
   my %res = ();
   if ( $c->session->{user_id} ) {
-    $self->login_successful( $c );
+    $self->login_successful( $c, 'facebook' );
     %res = (
         done  => 1,
         goto  => $c->url_for((delete $c->session->{goto_after_login} || '/')),

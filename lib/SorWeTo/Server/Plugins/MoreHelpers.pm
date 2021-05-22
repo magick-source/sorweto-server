@@ -7,6 +7,7 @@ sub register {
 
   $app->renderer->add_helper( include_maybe => \&include_maybe );
   $app->helper( handle_input_errors => \&handle_input_errors );
+  $app->helper( emit_hook => \&_emit_hook );
 }
 
 sub include_maybe {
@@ -78,6 +79,12 @@ sub handle_input_errors {
   }
 
   return;
+}
+
+sub _emit_hook {
+  my ($c, $hook, @params) = @_;
+
+  $c->app->plugins->emit_hook( $hook => $c, @params );
 }
 
 1;

@@ -76,7 +76,7 @@ sub _login_email {
     return $self->_finish_with_error( $c, $username, $passwd );
   }
 
-  return $self->login_successful( $c );
+  return $self->login_successful( $c, 'email' );
 
 }
 
@@ -90,7 +90,7 @@ sub _inline_login {
   
   $self->__inline_login( $c, $username, $passwd );
 
-  $self->login_successful( $c );
+  $self->login_successful( $c, 'email' );
 
   return;
 }
@@ -264,6 +264,8 @@ sub _new_user {
             email     => $email,
           );
           $self->__send_activation_email( $c, \%data );
+
+          $c->emit_hook( created_account => 'email' );
         } else {
           push @errors, 'Username selected is not available, please try a different one';
         }
