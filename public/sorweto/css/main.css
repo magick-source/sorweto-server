@@ -3,6 +3,10 @@
   min-height: 100%;
 }
 
+.navbar .dropdown-menu {
+  z-index: 1050;
+}
+
 .swt-full-height {
   min-height:100%;
 }
