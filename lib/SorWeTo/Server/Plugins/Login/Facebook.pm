@@ -141,7 +141,7 @@ sub decode_fb_data {
 sub _html_body_end {
   my ($self, $c) = @_;
 
-  return unless $c->stash->{on_login_page};
+  return unless $c->stash->{on_login_page} or $c->stash->{does_fb_login};
 
   my $app_id = $self->config->{app_id};
   return unless $app_id;
