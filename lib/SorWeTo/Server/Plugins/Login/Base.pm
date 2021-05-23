@@ -103,7 +103,7 @@ sub create_user_from_external {
     }
   }
 
-  $c->emit_hook( created_account => $params{source} );
+  $c->emit_hook( created_account => $params{source} => $user );
 
   return $user;
 }
