@@ -265,7 +265,7 @@ sub _new_user {
           );
           $self->__send_activation_email( $c, \%data );
 
-          $c->emit_hook( created_account => 'email' );
+          $c->emit_hook( created_account => 'email' => $user );
         } else {
           push @errors, 'Username selected is not available, please try a different one';
         }
