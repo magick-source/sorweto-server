@@ -53,8 +53,6 @@ sub _register_hook_count {
 
   $c->app->hook( $hook_name => sub {
       my ($c) = @_;
-      use Data::Dumper;
-      print STDERR "on $hook_name handler: ", Dumper( \@_ );
       $c->stats_count( $metric_path );
     });
 }
