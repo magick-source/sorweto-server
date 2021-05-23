@@ -12,6 +12,8 @@
       <div class="flex-fill d-flex flex-column">
         <div class="container-tight py-6">
 
+%= include 'inc/notices'
+
 %= content
 
         </div>

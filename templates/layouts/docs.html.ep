@@ -14,8 +14,13 @@
 
           <div class="row justify-content-md-center">
             <div class="col col-lg-10 col-sm-12">
+
+%= include 'inc/notices'
+
               <div class="card card-lg">
                 <div class="card-body">
+
+
 %= content
                 </div>
               </div>

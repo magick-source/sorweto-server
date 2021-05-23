@@ -1,0 +1,12 @@
+% my @notices = @{ stash('site_notices') || [] };
+% if ( @notices ) {
+<div class="row">
+  <div class="col">
+%   for my $notice (@notices) {
+
+%= include "inc/notices/$notice";
+
+%   }
+  </div>
+</div>
+% }
