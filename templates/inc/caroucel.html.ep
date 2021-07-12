@@ -3,10 +3,10 @@
 % if ( @cards ) {
 %   my $cur = 0;
 <div class="container">
-  <div class="row swt-carousel carousel mx-auto" data-ride="carousel" id="mySlider" data-interval="1500">
+  <div class="row swt-carousel carousel mx-auto" data-ride="carousel" id="mySlider" data-interval="5000">
 %   for my $card (@cards) {
 % my $extra = $classes[ $cur ] || '';
-    <div class="col-md-4 carousel-item <%=$extra%>">
+    <div class="col-md-6 carousel-item <%=$extra%>">
 %     if ( !ref $card ) { #template name
 %= include "inc/carousel/$card";
 
