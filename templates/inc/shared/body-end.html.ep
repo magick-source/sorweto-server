@@ -3,6 +3,7 @@
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/vendor/tabler/js/tabler.min.js"></script>
 <script src="/vendor/selectize/js/selectize.js"></script>
+<script src="/sorweto/js/carousel.js"></script>
 
 <%= html_hook 'html_body_end' %>
 

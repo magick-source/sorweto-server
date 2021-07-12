@@ -20,6 +20,7 @@
 
             <div class="col-sm-9">
               <div class="content">
+%= include 'inc/caroucel'
 
 %= include 'inc/notices'
 

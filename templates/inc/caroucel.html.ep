@@ -1,0 +1,34 @@
+% my @cards = @{ stash('top_carousel_cards') || [] };
+% my @classes = qw( active active-next active-next2 );
+% if ( @cards ) {
+%   my $cur = 0;
+<div class="container">
+  <div class="row swt-carousel carousel mx-auto" data-ride="carousel" id="mySlider" data-interval="1500">
+%   for my $card (@cards) {
+% my $extra = $classes[ $cur ] || '';
+    <div class="col-md-4 carousel-item <%=$extra%>">
+%     if ( !ref $card ) { #template name
+%= include "inc/carousel/$card";
+
+%     } elsif ( ref $card eq 'CODE' ) {
+%= $card->()
+
+%     } else {
+        <div class="card"><dic class-"card-body">
+%       if ( $card->{title} ) {
+          <h2 class="card-title"><%= $card->{title} %></h2>
+%       }
+          <p><%= $card->{text} %></p>
+%       if ( $card->{action} ) {
+          <a class="btn btn-primary" href="<%= $card->{action} %>">
+            <%= $card->{call_to_action} || __('call2action--see-more') %>
+          </a>
+%       }
+        </div></div>
+%     }
+    </div>
+%     $cur++;
+%   }
+  </div>
+</div>
+% }

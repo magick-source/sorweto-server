@@ -18,6 +18,8 @@ login-to-proceed        = Login to Proceed
 
 go-back-to-the-homepage = Go back to the Homepage
 
+call2action--see-more   = See More ...
+
 
 # login/login.html.ep
 login-form-no-account-yet = Don't have an account yet?
