@@ -189,7 +189,7 @@ sub _init_event {
       header_size => $c->req->header_size,
       body_size   => $c->req->body_size,
       remote_addr => $c->tx->remote_address || '-',
-      user_agent  => $c->req->header('User-Agent') || '-',
+      user_agent  => $c->req->headers->user_agent || '-',
     },
   };
 
