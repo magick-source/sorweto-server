@@ -49,7 +49,7 @@ sub set_loginform_data {
     username  => '',
     password  => '',
   };
-  
+
   if (my $filledup = $c->flash('email_login')) {
     $login_data->{email} = $filledup;
   }
@@ -65,7 +65,7 @@ sub _login_email {
 
   unless ($username and $passwd) {
     return $self->_login_error(
-        $c, 
+        $c,
         $c->__('error-login-username-or-password-missing')
       );
   }
@@ -82,12 +82,12 @@ sub _login_email {
 
 sub _inline_login {
   my ($self, $c) = @_;
-  
+
   my $username  = $c->param('username');
   my $passwd    = $c->param('password');
 
   return unless $username and $passwd;
-  
+
   $self->__inline_login( $c, $username, $passwd );
 
   $self->login_successful( $c, 'email' );
@@ -116,6 +116,9 @@ sub __login_with_username {
   my ($self, $c, $username, $passwd ) = @_;
 
   my $login_option = $self->get_login_option_by_username( 'email', $username );
+  unless ($login_option) {
+    $self->growl('invalid-login.username', $username );
+  }
 
   return $self->__check_password( $c, $login_option, $passwd );
 }
@@ -124,6 +127,10 @@ sub __login_with_email {
   my ($self, $c, $email, $passwd ) = @_;
 
   my $login_option = $self->get_login_option('email', $email);
+  unless ($login_option) {
+    $self->growl('invalid-login.email', $email );
+  }
+
 
   return $self->__check_password( $c, $login_option, $passwd );
 }
@@ -132,9 +139,7 @@ sub __check_password {
   my ($self, $c, $login_option, $passwd) = @_;
 
   unless ( $login_option ) {
-    $c->evinfo('no login_option found');
-
-    return $self->_login_error( $c, 
+    return $self->_login_error( $c,
          $c->__('error-login-username-or-password-invalid'),
       );
   }
@@ -147,7 +152,7 @@ sub __check_password {
     );
   unless ( $passwd_isok ) {
     $c->evinfo("there is an login_otion, but the password is wrong");
-    return $self->_login_error( $c, 
+    return $self->_login_error( $c,
          $c->__('error-login-username-or-password-invalid'),
       );
   }
@@ -278,7 +283,7 @@ sub _new_user {
         }
         push @errors, $err;
       };
-      
+
       unless ( @errors ) {
         return $c->render('login/email/account_created');
       }
@@ -322,6 +327,8 @@ sub _confirm_email {
   # Email confirmed, no need for the blob anymore
   $c->tmp_blob_delete('checkemail', $token );
 
+  $c->emit_hook( activated_account => 'email' => $user );
+
   $c->render( 'login/email/email_confirmed');
 }
 
@@ -341,7 +348,7 @@ sub _forgot_password {
   } elsif ( check_email( $username ) ) {
     $login = $self->get_login_option('email', $username );
     unless ($login) {
-      $login = $self->get_login_option('email', $username, 'pending' );  
+      $login = $self->get_login_option('email', $username, 'pending' );
     }
 
   }
@@ -372,7 +379,7 @@ sub _forgot_password {
 sub _forgot_password_checked {
   my ($self, $c) = @_;
 
-  my $token = $c->stash->{tmp_hash}; 
+  my $token = $c->stash->{tmp_hash};
   my $data  = $c->tmp_blob_load( 'checkemail', $token );
   unless ($data) {
     return $c->reply->not_found;
@@ -417,7 +424,7 @@ sub _forgot_password_checked {
     # Password changed, no need for the blob anymore
     $c->tmp_blob_delete('checkemail', $token );
 
-    return $c->render( 'login/email/password_changed' ); 
+    return $c->render( 'login/email/password_changed' );
   }
 
   $c->stash->{errors} = \@errors;
@@ -434,11 +441,16 @@ sub __send_activation_email {
 
   my $tmp_id = generate_random_hash('checkemail');
   $c->tmp_blob_store( 'checkemail', $tmp_id, $data );
+  my $subject = $c->translate(
+        'confirm-email-subject',
+        sitename => $c->stash->{sitename}
+      );
   $c->send_email('login/confirm_email', {
         email_type=> 'confirm-email',
         email     => $email,
         username  => $username,
         blob_id   => $tmp_id,
+        subject   => $subject,
         confirm_url =>
           => $c->url_for("/login/confirm_email/$tmp_id")->to_abs,
       });
@@ -454,11 +466,16 @@ sub __send_change_password_email {
 
   my $tmp_id = generate_random_hash('checkemail');
   $c->tmp_blob_store( 'checkemail', $tmp_id, $data );
+  my $subject = $c->translate(
+        'forgot-password-email-subject',
+        sitename => $c->stash->{sitename}
+      );
   $c->send_email('login/change_password', {
         email_type=> 'change-password',
         email     => $email,
         username  => $username,
         blob_id   => $tmp_id,
+        subject   => $subject,
         change_url =>
           => $c->url_for("/login/email/forgot-password/$tmp_id")->to_abs,
       });

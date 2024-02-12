@@ -14,6 +14,8 @@ our @EXPORT_OK = qw(
 sub check_email {
   my ($email) = @_;
 
+  return unless $email;
+
   unless ($email =~ m{
     \A\w[\w\.\-]+\@\w+[\w\-\.]*\w+
   }x) {
@@ -40,6 +42,8 @@ sub check_password {
 
 sub check_username {
   my ($username) = @_;
+
+  return unless $username;
 
   return $username =~ m{\A[a-zA-Z0-9\-\.]{3,18}\z};
 }

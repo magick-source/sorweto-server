@@ -41,7 +41,7 @@ sub send_email {
   }
 
   $config->{smtp_server} ||= 'localhost';
-  $config->{from_email}  ||= "noreplay\@$hostname";
+  $config->{from_email}  ||= "noreply\@$hostname";
 
   unless ( $data->{subject} ) {
     warn "Sending email without a subject";
@@ -72,7 +72,7 @@ sub send_email {
     $smtp->data();
     $smtp->datasend( "Subject: $data->{subject}\n");
     $smtp->datasend( "To: $send_to\n" );
-    $smtp->datasend( "Content-Type: text/html; charset=UTF-8\n"); 
+    $smtp->datasend( "Content-Type: text/html; charset=UTF-8\n");
     $smtp->datasend( "\n" ); # End of the header
     $smtp->datasend( $output );
     $smtp->dataend();
@@ -92,6 +92,12 @@ sub send_email {
     $tweet =~ s{\-+}{-}g;
     $c->tweet( $tweet );
   }
-} 
- 
+
+  my $growl = {email_to => $send_to};
+  if ($data->{username}) {
+    $growl->{username} = $data->{username};
+  }
+  $c->growl($tweet, $growl);
+}
+
 1;

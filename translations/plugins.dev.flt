@@ -2,6 +2,7 @@
 
 # lib/SorWeTo/Server/Plugins/Login/Email.pm
 confirm-email-subject = { $sitename } - Confirm your email address
+forgot-password-email-subject = { $sitename } - Recover your password
 
 
 # lib/SorWeTo/Server/Plugins/MoreHelpers.pm

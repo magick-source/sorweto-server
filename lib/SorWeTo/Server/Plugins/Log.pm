@@ -26,7 +26,7 @@ sub register {
   my ($self, $app, $conf) = @_;
 
   $app->evlog( $self );
-  
+
   $app->helper( evlog     => sub { $self->ev_log(@_); } );
   $app->helper( evinfo    => sub { $self->ev_info( @_ ); } );
   $app->helper( evnotice  => sub { $self->ev_notice( @_ ); } );
@@ -59,6 +59,7 @@ EoW
   }
 
   $app->hook( around_dispatch => sub { $self->_around_dispatch( @_ ) } );
+  $app->hook( before_dispatch => sub { $self->_before_dispatch( @_ ) });
 
   return;
 }
@@ -66,11 +67,17 @@ EoW
 sub _around_dispatch {
   my ($self, $next, $c) = @_;
 
-  $self->_start_event( $c );
+  $c->stash->{'evlog_starting_time'} = __now();
 
   $next->();
 
   $self->_send_event( $c );
+}
+
+sub _before_dispatch {
+  my ($self, $c) = @_;
+
+  $self->_start_event( $c );
 }
 
 sub ev_log {
@@ -116,7 +123,7 @@ sub _growl {
 
 sub _trace {
   my ($self, $c, $type, $mask, @data) = @_;
-  
+
   return if $self->level < $levels{ $type };
 
   my $logline = _apply_mask( $mask, @data );
@@ -149,12 +156,12 @@ sub _apply_mask {
   my ($mask, @data) = @_;
 
   local $Data::Dumper::Indent = 0;
-  
+
   ($mask, @data) = map {  $_ =~ s{\$VAR1 = }{}; $_ =~ s{\;}{}; $_ }
     map { $_ // '<UNDEF>' }
     map { ref $_ ? '<<'. Dumper( $_ ) .'>>' : $_ }
       $mask, @data;
-  
+
   my $res;
   if ($mask =~ m{\%} ) {
     $mask =~ s{\%T}{Time::HiRes::time}eg;
@@ -171,7 +178,7 @@ sub _init_event {
 
   my $event = {
     core => {
-      time_created  => int(Time::HiRes::time() * 1000 ),
+      time_created  => $c->stash->{evlog_starting_time} || __now(),
       type          => 'WEB',
       application   => $c->stash('sitename'),
     },
@@ -181,6 +188,8 @@ sub _init_event {
       url         => $c->req->url->path->to_string,
       header_size => $c->req->header_size,
       body_size   => $c->req->body_size,
+      remote_addr => $c->tx->remote_address || '-',
+      user_agent  => $c->req->header('User-Agent') || '-',
     },
   };
 
@@ -202,7 +211,7 @@ sub _finish_event {
 
   my $evt = delete $c->stash->{_event2log};
   return unless $evt;
-  
+
   $c->app->plugins->emit_hook( log__event_ready_to_send => $evt => $c);
 
   my $type = $c->stash->{'mojo.static'}   ? 'static'
@@ -216,7 +225,7 @@ sub _finish_event {
                : $c->res->is_server_error     ? 'server_error'
                : $c->res->is_client_error     ? 'client_error'
                :                                'unknown';
- 
+
   $evt->{response} = {
       code          => $c->res->code,
       body_size     => $c->res->body_size,
@@ -227,8 +236,8 @@ sub _finish_event {
 
   $evt->{request}->{type} = $type;
 
-  $evt->{core}->{time_sent} = int(Time::HiRes::time() * 1000);
-  $evt->{core}->{wallclock} 
+  $evt->{core}->{time_sent} = __now();
+  $evt->{core}->{wallclock}
     = $evt->{core}->{time_sent} - $evt->{core}->{time_created};
 
   return $evt;
@@ -252,15 +261,19 @@ sub _send_event {
 sub _event_sent {
   my ($self, $evt, $c) = @_;
 
-  my $tstart = int( Time::HiRes::time() * 1000 );
+  my $tstart = __now();
   $c->app->plugins->emit_hook( log__event_sent => $evt => $c );
-  my $tend = int( Time::HiRes::time() * 1000 );
+  my $tend = __now();
 
   my $wall = $tend - $tstart;
   warn "log_event_sent is taking too long [$wall ms]"
     if $wall > 10;
 
   return;
+}
+
+sub __now {
+  return int(Time::HiRes::time() * 1000 );
 }
 
 1;
