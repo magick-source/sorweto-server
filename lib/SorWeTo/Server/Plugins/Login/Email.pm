@@ -117,7 +117,7 @@ sub __login_with_username {
 
   my $login_option = $self->get_login_option_by_username( 'email', $username );
   unless ($login_option) {
-    $self->growl('invalid-login.username', $username );
+    $c->growl('invalid-login.username', $username );
   }
 
   return $self->__check_password( $c, $login_option, $passwd );
@@ -128,7 +128,7 @@ sub __login_with_email {
 
   my $login_option = $self->get_login_option('email', $email);
   unless ($login_option) {
-    $self->growl('invalid-login.email', $email );
+    $c->growl('invalid-login.email', $email );
   }
 
 
