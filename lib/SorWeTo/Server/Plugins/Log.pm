@@ -59,7 +59,6 @@ EoW
   }
 
   $app->hook( around_dispatch => sub { $self->_around_dispatch( @_ ) } );
-  $app->hook( before_dispatch => sub { $self->_before_dispatch( @_ ) });
 
   return;
 }
@@ -72,12 +71,6 @@ sub _around_dispatch {
   $next->();
 
   $self->_send_event( $c );
-}
-
-sub _before_dispatch {
-  my ($self, $c) = @_;
-
-  $self->_start_event( $c );
 }
 
 sub ev_log {
@@ -209,8 +202,7 @@ sub _start_event {
 sub _finish_event {
   my ($self, $c) = @_;
 
-  my $evt = delete $c->stash->{_event2log};
-  return unless $evt;
+  my $evt = delete $c->stash->{_event2log} || $self->_init_event($c);
 
   $c->app->plugins->emit_hook( log__event_ready_to_send => $evt => $c);
 
