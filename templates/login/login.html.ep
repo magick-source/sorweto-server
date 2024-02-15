@@ -19,7 +19,7 @@
 
 <div class="text-center text-muted">
   <%= __('login-form-no-account-yet') %>
-  <a href="/create_account/email.html">
+  <a href="<%= url_for('/create_account/email' ) %>">
     <%= __('login-form-sign-up') %>
   </a>
 </div>
