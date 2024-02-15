@@ -327,7 +327,7 @@ sub _confirm_email {
   # Email confirmed, no need for the blob anymore
   $c->tmp_blob_delete('checkemail', $token );
 
-  $c->emit_hook( activated_account => 'email' => $user_login );
+  $c->emit_hook( activated_account => 'email' => $user_login->get_user );
 
   $c->render( 'login/email/email_confirmed');
 }

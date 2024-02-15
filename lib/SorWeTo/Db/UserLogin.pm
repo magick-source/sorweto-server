@@ -1,6 +1,7 @@
 package SorWeTo::Db::UserLogin;
 
 use parent 'SorWeTo::Db';
+use SorWeTo::Db::User;
 
 __PACKAGE__->table('swt_user_login');
 
@@ -15,6 +16,13 @@ __PACKAGE__->columns( All => qw(
     last_updated
     flags
   ));
+
+sub get_user {
+  my ($self) = @_;
+
+  my ($user) = SorWeTo::Db::User->search_where(id => $self->user_id);
+  return $user;
+}
 
 =for MySQL
 
