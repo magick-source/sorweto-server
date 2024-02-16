@@ -258,6 +258,7 @@ sub _new_user {
 
 my $params = $c->req->params->to_hash;
 $c->growl('request_params' => $params);
+$c->growl('recaptcha-config' => $self->recaptcha_config);
 
     # unless (@errors) {
       check_recaptcha(
