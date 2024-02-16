@@ -14,7 +14,10 @@ use SorWeTo::Utils::Digests qw(
   generate_random_hash
 );
 
+use SorWeTo::Utils::Recaptcha qw(check_recaptcha);
+
 has config => sub { {} };
+has recaptcha_config => sub { {} };
 
 sub register {
   my ($self, $login, $conf) = @_;
@@ -38,6 +41,12 @@ sub register {
     });
 
   $login->app->helper( inline_login => sub { $self->_inline_login( @_ ) });
+  $login->app->html_hook(html_head => \&_html_head);
+
+  my $rec_config = $login->app->config->config('recaptcha');
+  if ($rec_config) {
+    $self->recaptcha_config($rec_config);
+  }
 
   return $self;
 }
@@ -247,6 +256,17 @@ sub _new_user {
       push @errors, "invalid Display Name - use 2 to 20 Characters, please";
     }
 
+my $params = $c->req->params->to_hash;
+$c->growl('request_params' => $params);
+
+    # unless (@errors) {
+      check_recaptcha(
+        $self->recaptcha_config->{secret_key},
+        $params->{"g-recaptcha-response"},
+        $c->tx->remote_address
+      );
+    # }
+
     unless (@errors) {
       eval {
         my $user = $self->create_user_if_available( $uname, {
@@ -293,6 +313,11 @@ sub _new_user {
   $c->stash->{user} = \%user;
   $c->stash->{errors} = \@errors;
   $c->stash->{show_sidebar} = 0;
+
+  if (my $key = $self->recaptcha_config->{site_key}){
+    $c->stash->{recaptcha_key} = $key;
+    $c->stash->{needs_recaptcha} = 1;
+  }
 
   $c->render('login/email/create_account');
 }
@@ -481,6 +506,16 @@ sub __send_change_password_email {
       });
 
   return;
+}
+
+sub _html_head {
+  my ($c, @params) = @_;
+
+  if ($c->stash->{needs_recaptcha}) {
+    return <<EoR;
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+EoR
+  }
 }
 
 1;
