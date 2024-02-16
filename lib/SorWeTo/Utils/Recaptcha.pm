@@ -13,7 +13,7 @@ sub check_recaptcha {
   my $result = $ua->post(
     'https://www.google.com/recaptcha/api/siteverify',
     {
-      secret_key  => $secret_key,
+      secret      => $secret_key,
       remoteip    => $remote_ip,
       response    => $response,
     }
