@@ -262,8 +262,8 @@ $c->growl('request_params' => $params);
     # unless (@errors) {
       check_recaptcha(
         $self->recaptcha_config->{secret_key},
+        $c->tx->remote_address,
         $params->{"g-recaptcha-response"},
-        $c->tx->remote_address
       );
     # }
 
