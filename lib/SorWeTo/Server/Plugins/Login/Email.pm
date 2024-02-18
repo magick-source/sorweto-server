@@ -272,9 +272,10 @@ $c->growl('recaptcha-config' => $self->recaptcha_config);
       $c->growl('recaptcha_error', $recaptcha_error);
       $c->emit_hook(
           recaptcha_failed => {
-              %user,
+              username        => $user{username},
+              email           => $user{email},
               recaptcha_error => $recaptcha_error,
-              action => 'new_user_account',
+              action          => 'new_user_account',
             },
         );
     }
