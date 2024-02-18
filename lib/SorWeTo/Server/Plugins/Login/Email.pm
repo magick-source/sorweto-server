@@ -538,10 +538,10 @@ sub _html_end {
 <script>
 $(function() {
   $('#submit-create-account').prop('disabled', true);
-  function recaptchaCallback() {
-    $('#submit-create-account').prop('disabled', false);
-  }
 });
+function recaptchaCallback() {
+  $('#submit-create-account').prop('disabled', false);
+}
 </script>
 EoS
   }
