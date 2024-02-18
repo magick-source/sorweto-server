@@ -25,7 +25,7 @@
         <label class="form-label">
           <%= __('fieldname-email-address') %>
           <span class="form-label-description">
-            <i class="fa fa-info-circle data-toggle="tooltip"
+            <i class="fa fa-info-circle" data-toggle="tooltip"
               data-placement="top"
               title="<%= __('create-account--email-info') %>"></i>
           </span>
