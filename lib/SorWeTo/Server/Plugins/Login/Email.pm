@@ -269,7 +269,14 @@ $c->growl('recaptcha-config' => $self->recaptcha_config);
 
     unless ($recaptcha_was_good) {
       push @errors, "We failed to validate your recaptcha test";
-      $c->growl('recaptcha_error', $recaptcha_error)
+      $c->growl('recaptcha_error', $recaptcha_error);
+      $c->emit_hook(
+          recaptcha_failed => {
+              %user,
+              recaptcha_error => $recaptcha_error,
+              action => 'new_user_account',
+            },
+        );
     }
 
     unless (@errors) {
@@ -527,12 +534,12 @@ sub _html_end {
   my ($c, @params) = @_;
 
   if ($c->stash->{needs_recaptcha}) {
-    return <<EoS;
+    return <<'EoS';
 <script>
 $(function() {
-  $('#submit-create-account').addAttr('disabled');
+  $('#submit-create-account').prop('disabled', true);
   function recaptchaCallback() {
-    $('#submit-create-account').removeAttr('disabled');
+    $('#submit-create-account').prop('disabled', false);
   }
 });
 </script>
