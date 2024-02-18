@@ -53,13 +53,15 @@
       </div>
 % if (defined $recaptcha_key) {
       <div class="mb-3">
-        <div class="g-recaptcha" data-sitekey="<%= $recaptcha_key %>"></div>
+        <div class="g-recaptcha" data-callback="recaptchaCallback"
+             data-sitekey="<%= $recaptcha_key %>"></div>
       </div>
-
 % }
 
       <div class="form-footer">
-        <button type="submit" class="btn btn-primary btn-block">
+        <button type="submit"
+            class="btn btn-primary btn-block"
+            id="submit-create-account">
           <%= __('buttonlabel-create-account') %>
         </button>
       </div>

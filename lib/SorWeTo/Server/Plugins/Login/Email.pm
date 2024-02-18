@@ -42,6 +42,7 @@ sub register {
 
   $login->app->helper( inline_login => sub { $self->_inline_login( @_ ) });
   $login->app->html_hook(html_head => \&_html_head);
+  $login->app->html_hook(html_body_end => \&_html_end);
 
   my $rec_config = $login->app->config->config('recaptcha');
   if ($rec_config) {
@@ -260,13 +261,16 @@ my $params = $c->req->params->to_hash;
 $c->growl('request_params' => $params);
 $c->growl('recaptcha-config' => $self->recaptcha_config);
 
-    # unless (@errors) {
-      check_recaptcha(
+    my ($recaptcha_was_good, $recaptcha_error) = check_recaptcha(
         $self->recaptcha_config->{secret_key},
         $c->tx->remote_address,
         $params->{"g-recaptcha-response"},
       );
-    # }
+
+    unless ($recaptcha_was_good) {
+      push @errors, "We failed to validate your recaptcha test";
+      $c->growl('recaptcha_error', $recaptcha_error)
+    }
 
     unless (@errors) {
       eval {
@@ -516,6 +520,23 @@ sub _html_head {
     return <<EoR;
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 EoR
+  }
+}
+
+sub _html_end {
+  my ($c, @params) = @_;
+
+  if ($c->stash->{needs_recaptcha}) {
+    return <<EoS;
+<script>
+$(function() {
+  $('#submit-create-account').addAttr('disabled');
+  function recaptchaCallback() {
+    $('#submit-create-account').removeAttr('disabled');
+  }
+});
+</script>
+EoS
   }
 }
 
