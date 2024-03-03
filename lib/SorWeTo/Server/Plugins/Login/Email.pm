@@ -257,29 +257,32 @@ sub _new_user {
       push @errors, "invalid Display Name - use 2 to 20 Characters, please";
     }
 
-my $params = $c->req->params->to_hash;
-$c->growl('request_params' => $params);
-$c->growl('recaptcha-config' => $self->recaptcha_config);
-
-    my ($recaptcha_was_good, $recaptcha_error) = check_recaptcha(
+    my $recaptcha_response = $c->param('g-recaptcha-response');
+    if ($recaptcha_response) {
+      my ($recaptcha_was_good, $recaptcha_error) = check_recaptcha(
         $self->recaptcha_config->{secret_key},
         $c->tx->remote_address,
-        $params->{"g-recaptcha-response"},
+        $recaptcha_response,
       );
-
-    unless ($recaptcha_was_good) {
-      push @errors, "We failed to validate your recaptcha test";
-      $c->growl('recaptcha_error', $recaptcha_error);
-      $c->emit_hook(
-          recaptcha_failed => {
-              username        => $user{username},
-              email           => $user{email},
-              recaptcha_error => $recaptcha_error,
-              action          => 'new_user_account',
-            },
-        );
+      unless ($recaptcha_was_good) {
+        $c->growl('recaptcha_error', $recaptcha_error);
+        $c->emit_hook(
+            recaptcha_failed => {
+                username        => $user{username},
+                email           => $user{email},
+                recaptcha_error => $recaptcha_error,
+                action          => 'new_user_account',
+              },
+          );
+      }
+    } else {
+      push @errors, "Check on the box that you are not a robot, please";
     }
 
+
+    if (@errors) {
+      $c->growl('form-errors' => @errors);
+    }
     unless (@errors) {
       eval {
         my $user = $self->create_user_if_available( $uname, {
