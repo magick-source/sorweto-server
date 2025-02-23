@@ -274,6 +274,7 @@ sub _new_user {
                 action          => 'new_user_account',
               },
           );
+        push @errors, "Check on the box that you are not a robot, please";
       }
     } else {
       push @errors, "Check on the box that you are not a robot, please";
